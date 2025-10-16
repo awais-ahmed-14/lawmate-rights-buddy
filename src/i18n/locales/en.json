@@ -1,0 +1,145 @@
+{
+  "header": {
+    "logo": "⚖️ LAWMATE",
+    "nav": {
+      "home": "Home",
+      "rights": "Fundamental Rights",
+      "scenarios": "Scenario Guidance",
+      "chatbot": "AI Chatbot",
+      "about": "About",
+      "contact": "Contact"
+    }
+  },
+  "hero": {
+    "title": "Empowering Every Indian Citizen",
+    "subtitle": "Know Your Rights.",
+    "description": "Get multilingual AI guidance and real legal knowledge that protects your freedom.",
+    "cta": {
+      "primary": "Explore Rights",
+      "secondary": "Talk to LAWMATE AI"
+    }
+  },
+  "features": {
+    "title": "Empowering You with Knowledge",
+    "cards": {
+      "learn": {
+        "title": "Learn Rights",
+        "description": "Simplified explanations for all 6 Fundamental Rights"
+      },
+      "chatbot": {
+        "title": "AI Legal Chatbot",
+        "description": "Ask questions or describe your situation in any language"
+      },
+      "scenarios": {
+        "title": "Scenario Guidance",
+        "description": "Real-world examples and step-by-step help"
+      },
+      "multilingual": {
+        "title": "Multilingual Support",
+        "description": "Switch between English, Hindi, Telugu, Tamil, Bengali instantly"
+      }
+    }
+  },
+  "scenarios": {
+    "title": "Common Scenarios",
+    "subtitle": "Get specific guidance for real-life situations",
+    "police": {
+      "title": "Stopped by Police",
+      "description": "Know your rights when questioned without reason",
+      "right": "Article 21 - Right to Personal Liberty",
+      "guidance": "You have the right to remain silent and request legal counsel. Police must provide valid grounds for detention.",
+      "example": "In a 2018 Delhi case, the court ruled in favor of a citizen illegally detained without proper documentation.",
+      "action": "Request written documentation and contact a lawyer immediately."
+    },
+    "discrimination": {
+      "title": "Workplace Discrimination",
+      "description": "Facing unfair treatment at school or work",
+      "right": "Article 15 & 16 - Right to Equality",
+      "guidance": "Discrimination based on religion, race, caste, sex, or place of birth is illegal in India.",
+      "example": "A Mumbai company was fined for refusing employment based on caste in 2020.",
+      "action": "Document incidents and file a complaint with the National Human Rights Commission."
+    },
+    "eviction": {
+      "title": "Landlord Issues",
+      "description": "Eviction without proper notice",
+      "right": "Article 21 - Right to Shelter",
+      "guidance": "Landlords must provide written notice as per the rental agreement and cannot forcibly evict you.",
+      "example": "In Bangalore, a court stayed eviction proceedings where proper notice wasn't given.",
+      "action": "Demand written notice and consult a tenant rights lawyer."
+    },
+    "harassment": {
+      "title": "Women Safety",
+      "description": "Harassment or safety concerns",
+      "right": "Article 21 - Right to Live with Dignity",
+      "guidance": "Sexual harassment is illegal. Women have the right to file FIR and seek police protection.",
+      "example": "Supreme Court's Vishaka Guidelines mandate workplace safety committees.",
+      "action": "File a police complaint and contact women's helpline 1091."
+    }
+  },
+  "rights": {
+    "title": "Your Fundamental Rights",
+    "subtitle": "Know the 6 pillars of Indian democracy",
+    "equality": {
+      "title": "Right to Equality",
+      "description": "Prohibits discrimination on grounds of religion, race, caste, sex, or place of birth",
+      "articles": "Articles 14-18"
+    },
+    "freedom": {
+      "title": "Right to Freedom",
+      "description": "Protects freedoms of speech, assembly, association, movement, residence, and profession",
+      "articles": "Articles 19-22"
+    },
+    "exploitation": {
+      "title": "Right Against Exploitation",
+      "description": "Prohibits trafficking, forced labor, and child labor",
+      "articles": "Articles 23-24"
+    },
+    "religion": {
+      "title": "Right to Freedom of Religion",
+      "description": "Ensures religious freedom and the right to manage religious institutions",
+      "articles": "Articles 25-28"
+    },
+    "cultural": {
+      "title": "Cultural & Educational Rights",
+      "description": "Protects rights of minorities to conserve culture and establish educational institutions",
+      "articles": "Articles 29-30"
+    },
+    "remedies": {
+      "title": "Right to Constitutional Remedies",
+      "description": "Guarantees the right to approach courts for enforcement of Fundamental Rights",
+      "articles": "Article 32"
+    }
+  },
+  "chatbot": {
+    "title": "AI Legal Assistant",
+    "subtitle": "Describe your situation and get instant guidance",
+    "placeholder": "Describe your legal situation in your language...",
+    "send": "Send",
+    "typing": "LAWMATE is thinking...",
+    "example": "Example: My landlord evicted me without notice"
+  },
+  "about": {
+    "title": "Our Mission",
+    "description": "Lawmate's mission is to make legal knowledge accessible and multilingual — so every citizen of India can stand up for their rights.",
+    "subtitle": "We believe every Indian deserves to understand and exercise their constitutional rights."
+  },
+  "contact": {
+    "title": "Need Legal Help?",
+    "subtitle": "Reach out to our team directly",
+    "call": "Call Now",
+    "email": "Send Email",
+    "whatsapp": "Chat on WhatsApp",
+    "form": {
+      "name": "Your Name",
+      "email": "Your Email",
+      "message": "Your Message",
+      "submit": "Send Message",
+      "success": "Message sent successfully! We'll respond soon.",
+      "error": "Failed to send message. Please try again."
+    }
+  },
+  "footer": {
+    "copyright": "© 2025 LAWMATE. All rights reserved.",
+    "tagline": "Made with ❤️ in India | Empowering Citizens through AI"
+  }
+}

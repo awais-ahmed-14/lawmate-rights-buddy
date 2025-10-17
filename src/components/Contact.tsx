@@ -21,35 +21,49 @@ export const Contact = () => {
         <Card className="shadow-lg">
           <CardHeader className="bg-gradient-hero text-white rounded-t-lg">
             <CardTitle className="text-center text-2xl">
-              📞 {t('contact.title')}
+              📞 {t('contact.headTitle')}
             </CardTitle>
           </CardHeader>
           <CardContent className="p-8">
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="text-center mb-8">
+              <p className="text-lg font-semibold mb-2">
+                {t('contact.headDescription')}
+              </p>
+              <p className="text-muted-foreground text-sm">
+                {t('contact.headNote')}
+              </p>
+            </div>
+
+            <div className="flex justify-center mb-8">
+              <a 
+                href="tel:+918000000000"
+                className="block w-full max-w-md"
+              >
+                <Button 
+                  size="lg" 
+                  className="w-full h-auto flex flex-col items-center gap-4 py-8 text-lg"
+                >
+                  <Phone className="h-12 w-12" />
+                  <div className="flex flex-col items-center">
+                    <span className="font-bold">{t('contact.callHead')}</span>
+                    <span className="text-sm opacity-90">+91 80000 00000</span>
+                  </div>
+                </Button>
+              </a>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
               <a 
                 href="tel:+918001234567"
                 className="block"
               >
                 <Button 
-                  size="lg" 
-                  className="w-full h-auto flex flex-col items-center gap-3 py-6 bg-green-600 hover:bg-green-700"
-                >
-                  <Phone className="h-8 w-8" />
-                  <span>{t('contact.call')}</span>
-                </Button>
-              </a>
-
-              <a 
-                href="mailto:support@lawmate.in?subject=Legal%20Help%20Request"
-                className="block"
-              >
-                <Button 
-                  size="lg" 
+                  size="lg"
                   variant="outline"
                   className="w-full h-auto flex flex-col items-center gap-3 py-6"
                 >
-                  <Mail className="h-8 w-8" />
-                  <span>{t('contact.email')}</span>
+                  <Phone className="h-8 w-8" />
+                  <span>{t('contact.callSupport')}</span>
                 </Button>
               </a>
 
@@ -60,8 +74,9 @@ export const Contact = () => {
                 className="block"
               >
                 <Button 
-                  size="lg" 
-                  className="w-full h-auto flex flex-col items-center gap-3 py-6 bg-green-500 hover:bg-green-600"
+                  size="lg"
+                  variant="outline"
+                  className="w-full h-auto flex flex-col items-center gap-3 py-6"
                 >
                   <MessageCircle className="h-8 w-8" />
                   <span>{t('contact.whatsapp')}</span>
@@ -71,7 +86,7 @@ export const Contact = () => {
 
             <div className="mt-8 p-6 bg-accent/10 rounded-lg text-center">
               <p className="text-sm text-muted-foreground">
-                <strong>Helpline:</strong> +91 800 123 4567 | <strong>Email:</strong> support@lawmate.in
+                <strong>Support Helpline:</strong> +91 800 123 4567
               </p>
               <p className="text-xs text-muted-foreground mt-2">
                 Available: Monday - Saturday, 9 AM - 6 PM IST

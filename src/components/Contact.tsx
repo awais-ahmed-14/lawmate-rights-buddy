@@ -36,7 +36,7 @@ export const Contact = () => {
 
             <div className="flex justify-center mb-8">
               <a 
-                href="tel:+918000000000"
+                href="tel:+918897166877"
                 className="block w-full max-w-md"
               >
                 <Button 
@@ -46,7 +46,7 @@ export const Contact = () => {
                   <Phone className="h-12 w-12" />
                   <div className="flex flex-col items-center">
                     <span className="font-bold">{t('contact.callHead')}</span>
-                    <span className="text-sm opacity-90">+91 80000 00000</span>
+                    <span className="text-sm opacity-90">+91 8897166877</span>
                   </div>
                 </Button>
               </a>

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, Mic, MicOff, Bot, User, Loader2 } from 'lucide-react';
+import { Send, Mic, MicOff, Bot, User, Loader2, Volume2, VolumeX } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -19,8 +19,10 @@ export const ScenarioInput = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
+  const synthRef = useRef<SpeechSynthesis | null>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -31,6 +33,11 @@ export const ScenarioInput = () => {
   }, [messages]);
 
   useEffect(() => {
+    // Initialize speech synthesis
+    if ('speechSynthesis' in window) {
+      synthRef.current = window.speechSynthesis;
+    }
+
     // Initialize speech recognition
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
       const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
@@ -52,6 +59,10 @@ export const ScenarioInput = () => {
         const transcript = event.results[0][0].transcript;
         setInput(transcript);
         setIsListening(false);
+        toast({
+          title: "Voice Detected",
+          description: transcript,
+        });
       };
 
       recognitionRef.current.onerror = (event: any) => {
@@ -73,8 +84,46 @@ export const ScenarioInput = () => {
       if (recognitionRef.current) {
         recognitionRef.current.stop();
       }
+      if (synthRef.current) {
+        synthRef.current.cancel();
+      }
     };
   }, [i18n.language, toast]);
+
+  const speakText = (text: string) => {
+    if (!synthRef.current) return;
+
+    // Cancel any ongoing speech
+    synthRef.current.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Set language based on i18n
+    const langMap: { [key: string]: string } = {
+      en: 'en-IN',
+      hi: 'hi-IN',
+      te: 'te-IN',
+      ta: 'ta-IN',
+      bn: 'bn-IN'
+    };
+    utterance.lang = langMap[i18n.language] || 'en-IN';
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.volume = 1;
+
+    utterance.onstart = () => setIsSpeaking(true);
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    synthRef.current.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    if (synthRef.current) {
+      synthRef.current.cancel();
+      setIsSpeaking(false);
+    }
+  };
 
   const toggleVoiceInput = () => {
     if (!recognitionRef.current) {
@@ -103,6 +152,9 @@ export const ScenarioInput = () => {
     e.preventDefault();
     if (!input.trim() || isLoading) return;
 
+    // Stop any ongoing speech
+    stopSpeaking();
+
     const userMessage = input.trim();
     setInput('');
     setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
@@ -120,6 +172,9 @@ export const ScenarioInput = () => {
 
       if (data?.reply) {
         setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
+        
+        // Automatically speak the AI response
+        speakText(data.reply);
       }
     } catch (error: any) {
       console.error('Chat error:', error);
@@ -140,9 +195,23 @@ export const ScenarioInput = () => {
           <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
             {t('scenarioInput.title')}
           </h2>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-xl text-muted-foreground mb-4">
             {t('scenarioInput.subtitle')}
           </p>
+          {isSpeaking && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 rounded-full animate-pulse">
+              <Volume2 className="h-5 w-5 text-primary" />
+              <span className="text-sm text-primary font-medium">AI is speaking...</span>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={stopSpeaking}
+                className="h-6 w-6 p-0 hover:bg-primary/20"
+              >
+                <VolumeX className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
         </div>
 
         <Card className="shadow-lg">

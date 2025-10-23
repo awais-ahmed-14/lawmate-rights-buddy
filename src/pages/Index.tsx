@@ -2,6 +2,7 @@ import { Header } from '@/components/Header';
 import { Hero } from '@/components/Hero';
 import { Features } from '@/components/Features';
 import { Scenarios } from '@/components/Scenarios';
+import { ScenarioInput } from '@/components/ScenarioInput';
 import { FundamentalRights } from '@/components/FundamentalRights';
 import { About } from '@/components/About';
 import { Contact } from '@/components/Contact';
@@ -15,6 +16,7 @@ const Index = () => {
       <Features />
       <FundamentalRights />
       <Scenarios />
+      <ScenarioInput />
       <About />
       <Contact />
       <Footer />

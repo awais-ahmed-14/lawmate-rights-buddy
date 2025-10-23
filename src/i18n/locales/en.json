@@ -171,15 +171,17 @@
     }
   },
   "scenarioInput": {
-    "title": "Describe Your Situation",
-    "subtitle": "Type or speak your real-life legal scenario for instant AI guidance",
+    "title": "Lawmate AI Assistant – Describe Your Situation",
+    "subtitle": "Type or speak your real-life legal scenario and get instant AI guidance in your language",
     "cardTitle": "Voice & Text Input",
     "placeholder": "Describe your situation here... (e.g., 'The police stopped me without reason')",
-    "welcomeMessage": "Welcome! Describe your legal situation below or use voice input",
+    "welcomeMessage": "Welcome! Describe your legal situation below or use voice input. I'll respond with relevant rights, examples, and next steps.",
     "examplePrompt": "Example: 'My employer is discriminating against me' or 'I was evicted without notice'",
     "thinking": "Analyzing your situation...",
     "voiceStart": "Listening...",
-    "voiceError": "Voice input failed. Please try typing instead."
+    "voiceError": "Voice input failed. Please try typing instead.",
+    "send": "Send",
+    "stopSpeaking": "Stop Speaking"
   },
   "chatbot": {
     "title": "AI Legal Assistant",

@@ -1,4 +1,5 @@
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Scale, Bird, Shield, Church, BookOpen, Gavel } from 'lucide-react';
 
@@ -13,6 +14,7 @@ const rights = [
 
 export const FundamentalRights = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   return (
     <section id="rights" className="py-20 bg-gradient-hero text-white">
@@ -30,7 +32,8 @@ export const FundamentalRights = () => {
           {rights.map((right) => (
             <Card 
               key={right.key}
-              className="hover-lift bg-white/10 backdrop-blur border-white/20 text-white"
+              className="hover-lift bg-white/10 backdrop-blur border-white/20 text-white cursor-pointer transition-transform hover:scale-105"
+              onClick={() => navigate(`/right/${right.key}`)}
             >
               <CardHeader>
                 <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${right.gradient} flex items-center justify-center mb-3 shadow-lg`}>

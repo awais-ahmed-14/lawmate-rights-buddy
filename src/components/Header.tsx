@@ -64,12 +64,6 @@ export const Header = () => {
             {t('header.nav.scenarios')}
           </button>
           <button
-            onClick={() => scrollToSection('chatbot')}
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
-            {t('header.nav.chatbot')}
-          </button>
-          <button
             onClick={() => scrollToSection('about')}
             className="text-sm font-medium transition-colors hover:text-primary"
           >
@@ -138,12 +132,6 @@ export const Header = () => {
               className="text-sm font-medium text-left transition-colors hover:text-primary"
             >
               {t('header.nav.scenarios')}
-            </button>
-            <button
-              onClick={() => scrollToSection('chatbot')}
-              className="text-sm font-medium text-left transition-colors hover:text-primary"
-            >
-              {t('header.nav.chatbot')}
             </button>
             <button
               onClick={() => scrollToSection('about')}

@@ -48,7 +48,7 @@ export default function RightDetail() {
             onClick={() => navigate('/')}
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Home
+            {t('rightDetail.backToHome')}
           </Button>
 
           <Card className="shadow-lg">
@@ -65,17 +65,17 @@ export default function RightDetail() {
             </CardHeader>
             <CardContent className="p-8">
               <div className="prose prose-lg max-w-none">
-                <h3 className="text-2xl font-semibold mb-4">Overview</h3>
+                <h3 className="text-2xl font-semibold mb-4">{t('rightDetail.overview')}</h3>
                 <p className="text-muted-foreground text-lg mb-6">
                   {t(`rights.${rightKey}.description`)}
                 </p>
 
-                <h3 className="text-2xl font-semibold mb-4">Detailed Explanation</h3>
+                <h3 className="text-2xl font-semibold mb-4">{t('rightDetail.detailed')}</h3>
                 <p className="text-muted-foreground text-lg mb-6">
                   {t(`rights.${rightKey}.detailed`)}
                 </p>
 
-                <h3 className="text-2xl font-semibold mb-4">Key Provisions</h3>
+                <h3 className="text-2xl font-semibold mb-4">{t('rightDetail.provisions')}</h3>
                 <ul className="list-disc pl-6 space-y-2 text-muted-foreground text-lg mb-6">
                   {t(`rights.${rightKey}.provisions`, { returnObjects: true }) as string[] && 
                     (t(`rights.${rightKey}.provisions`, { returnObjects: true }) as string[]).map((provision: string, index: number) => (
@@ -84,12 +84,12 @@ export default function RightDetail() {
                   }
                 </ul>
 
-                <h3 className="text-2xl font-semibold mb-4">Real-Life Examples</h3>
+                <h3 className="text-2xl font-semibold mb-4">{t('rightDetail.examples')}</h3>
                 <p className="text-muted-foreground text-lg mb-6">
                   {t(`rights.${rightKey}.example`)}
                 </p>
 
-                <h3 className="text-2xl font-semibold mb-4">How to Exercise This Right</h3>
+                <h3 className="text-2xl font-semibold mb-4">{t('rightDetail.howTo')}</h3>
                 <p className="text-muted-foreground text-lg">
                   {t(`rights.${rightKey}.howTo`)}
                 </p>

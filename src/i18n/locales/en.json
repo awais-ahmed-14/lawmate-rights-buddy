@@ -210,5 +210,13 @@
   "footer": {
     "copyright": "© 2025 LAWMATE. All rights reserved.",
     "tagline": "Made with ❤️ in India | Empowering Citizens through AI"
+  },
+  "rightDetail": {
+    "overview": "Overview",
+    "detailed": "Detailed Explanation",
+    "provisions": "Key Provisions",
+    "examples": "Real-Life Examples",
+    "howTo": "How to Exercise This Right",
+    "backToHome": "Back to Home"
   }
 }

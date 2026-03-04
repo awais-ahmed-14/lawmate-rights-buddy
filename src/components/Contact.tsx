@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Phone, Mail, MessageCircle } from 'lucide-react';
+import { EvidenceLocker } from './EvidenceLocker';
 
 export const Contact = () => {
   const { t } = useTranslation();
@@ -97,6 +98,11 @@ export const Contact = () => {
               </Button>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Evidence Locker */}
+        <div className="mt-8">
+          <EvidenceLocker />
         </div>
       </div>
     </section>

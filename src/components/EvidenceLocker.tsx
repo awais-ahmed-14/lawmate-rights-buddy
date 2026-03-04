@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -13,11 +13,19 @@ interface UploadedFile {
   file: File;
 }
 
-export const EvidenceLocker = () => {
+interface EvidenceLockerProps {
+  onFilesChanged?: (files: File[]) => void;
+}
+
+export const EvidenceLocker = ({ onFilesChanged }: EvidenceLockerProps) => {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [files, setFiles] = useState<UploadedFile[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    onFilesChanged?.(files.map(f => f.file));
+  }, [files, onFilesChanged]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files;
@@ -63,7 +71,7 @@ export const EvidenceLocker = () => {
   };
 
   return (
-    <Card className="shadow-lg mt-6">
+    <Card className="shadow-lg">
       <CardHeader className="bg-gradient-hero text-white rounded-t-lg">
         <CardTitle className="flex items-center gap-2">
           <Shield className="h-5 w-5" />

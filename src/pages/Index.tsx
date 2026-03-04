@@ -19,8 +19,8 @@ const Index = () => {
       <Scenarios />
       <ScenarioInput />
       <DataAnalysis />
-      <About />
       <Contact />
+      <About />
       <Footer />
     </div>
   );

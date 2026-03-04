@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Globe, Menu, X } from 'lucide-react';
+import { Globe, Menu, X, BarChart3, Bot } from 'lucide-react';
 import { useState } from 'react';
 import {
   DropdownMenu,
@@ -39,45 +39,45 @@ export const Header = () => {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-2xl font-heading font-bold text-primary">
-            {t('header.logo')}
+            ⚖️ {t('header.logo')}
           </span>
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
-          <button
-            onClick={() => scrollToSection('home')}
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
+        <nav className="hidden md:flex items-center gap-5">
+          <button onClick={() => scrollToSection('home')} className="text-sm font-medium transition-colors hover:text-primary">
             {t('header.nav.home')}
           </button>
-          <button
-            onClick={() => scrollToSection('rights')}
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
+          <button onClick={() => scrollToSection('rights')} className="text-sm font-medium transition-colors hover:text-primary">
             {t('header.nav.rights')}
           </button>
-          <button
-            onClick={() => scrollToSection('scenarios')}
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
+          <button onClick={() => scrollToSection('scenarios')} className="text-sm font-medium transition-colors hover:text-primary">
             {t('header.nav.scenarios')}
           </button>
-          <button
-            onClick={() => scrollToSection('about')}
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
+          <button onClick={() => scrollToSection('scenario-input')} className="text-sm font-medium transition-colors hover:text-primary flex items-center gap-1">
+            <Bot className="h-3.5 w-3.5" />
+            {t('header.nav.ai', 'AI Assistant')}
+          </button>
+          <button onClick={() => scrollToSection('about')} className="text-sm font-medium transition-colors hover:text-primary">
             {t('header.nav.about')}
           </button>
-          <button
-            onClick={() => scrollToSection('contact')}
-            className="text-sm font-medium transition-colors hover:text-primary"
-          >
+          <button onClick={() => scrollToSection('contact')} className="text-sm font-medium transition-colors hover:text-primary">
             {t('header.nav.contact')}
           </button>
         </nav>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
+          {/* Data Analysis Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => scrollToSection('data-analysis')}
+            className="gap-1.5 hidden sm:flex"
+          >
+            <BarChart3 className="h-4 w-4" />
+            <span className="hidden lg:inline">{t('header.nav.analytics', 'Analytics')}</span>
+          </Button>
+
           {/* Language Selector */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -114,35 +114,28 @@ export const Header = () => {
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
         <div className="border-t md:hidden">
-          <nav className="container flex flex-col gap-4 py-4">
-            <button
-              onClick={() => scrollToSection('home')}
-              className="text-sm font-medium text-left transition-colors hover:text-primary"
-            >
+          <nav className="container flex flex-col gap-3 py-4">
+            <button onClick={() => scrollToSection('home')} className="text-sm font-medium text-left transition-colors hover:text-primary">
               {t('header.nav.home')}
             </button>
-            <button
-              onClick={() => scrollToSection('rights')}
-              className="text-sm font-medium text-left transition-colors hover:text-primary"
-            >
+            <button onClick={() => scrollToSection('rights')} className="text-sm font-medium text-left transition-colors hover:text-primary">
               {t('header.nav.rights')}
             </button>
-            <button
-              onClick={() => scrollToSection('scenarios')}
-              className="text-sm font-medium text-left transition-colors hover:text-primary"
-            >
+            <button onClick={() => scrollToSection('scenarios')} className="text-sm font-medium text-left transition-colors hover:text-primary">
               {t('header.nav.scenarios')}
             </button>
-            <button
-              onClick={() => scrollToSection('about')}
-              className="text-sm font-medium text-left transition-colors hover:text-primary"
-            >
+            <button onClick={() => scrollToSection('scenario-input')} className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1">
+              <Bot className="h-3.5 w-3.5" />
+              {t('header.nav.ai', 'AI Assistant')}
+            </button>
+            <button onClick={() => scrollToSection('data-analysis')} className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1">
+              <BarChart3 className="h-3.5 w-3.5" />
+              {t('header.nav.analytics', 'Analytics')}
+            </button>
+            <button onClick={() => scrollToSection('about')} className="text-sm font-medium text-left transition-colors hover:text-primary">
               {t('header.nav.about')}
             </button>
-            <button
-              onClick={() => scrollToSection('contact')}
-              className="text-sm font-medium text-left transition-colors hover:text-primary"
-            >
+            <button onClick={() => scrollToSection('contact')} className="text-sm font-medium text-left transition-colors hover:text-primary">
               {t('header.nav.contact')}
             </button>
           </nav>

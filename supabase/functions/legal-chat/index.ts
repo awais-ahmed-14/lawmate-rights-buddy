@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.75.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -13,12 +14,15 @@ serve(async (req) => {
   try {
     const { message, language } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // System prompt with legal expertise and scenario detection
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!);
+
     const languageNames: { [key: string]: string } = {
       en: 'English',
       hi: 'Hindi (हिंदी)',
@@ -41,36 +45,29 @@ Your approach:
 5. Include real court cases and precedents
 6. Suggest immediate actions and long-term legal strategy
 
-Format your response as:
+IMPORTANT: At the very start of your response, on the first line, output ONLY a short English case-type label (2-4 words like "Police Harassment", "Domestic Violence", "Workplace Discrimination", "Women Safety", "Property Dispute", "Cyber Crime", etc.) followed by "---" and then your full response. Example: "Police Harassment---⚖️ ..."
 
-⚖️ **Relevant Right / कानूनी अधिकार**:
+Format your main response as:
+
+⚖️ **Relevant Right**:
 [Article Number - Full name of the right with brief description]
 
-📋 **Your Situation Analysis / स्थिति विश्लेषण**:
-[Detailed analysis of their specific situation - explain what happened in legal terms, why it matters, and how the law views this]
+📋 **Your Situation Analysis**:
+[Detailed analysis of their specific situation]
 
-📖 **Legal Explanation / कानूनी व्याख्या**:
-[Step-by-step explanation in simple language:
-  Step 1: What the law says about this
-  Step 2: How it applies to your case
-  Step 3: What protections you have
-  Step 4: What the other party is legally required to do]
+📖 **Legal Explanation**:
+[Step-by-step explanation in simple language]
 
-🏛️ **Real Court Case / वास्तविक उदाहरण**:
-[Cite a specific, real Indian court case with year, parties, and outcome that is similar to the user's situation]
+🏛️ **Real Court Case**:
+[Cite a specific, real Indian court case]
 
-👉 **Immediate Actions / तुरंत करने योग्य कदम**:
-[Numbered list of concrete, practical steps the user should take RIGHT NOW:
-  1. First immediate action
-  2. Second action
-  3. Third action
-  4. Where to go / whom to contact
-  5. Important helpline numbers]
+👉 **Immediate Actions**:
+[Numbered list of concrete, practical steps]
 
-🛡️ **Legal Protection Tips / कानूनी सुरक्षा सुझाव**:
+🛡️ **Legal Protection Tips**:
 [Additional tips to protect their rights going forward]
 
-Be empathetic, professional, and empowering. Use simple language. The user may be scared or confused - reassure them that the law is on their side.`;
+Be empathetic, professional, and empowering. Use simple language.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -85,7 +82,7 @@ Be empathetic, professional, and empowering. Use simple language. The user may b
           { role: "user", content: message }
         ],
         temperature: 0.7,
-        max_tokens: 1000,
+        max_tokens: 1500,
       }),
     });
 
@@ -111,10 +108,53 @@ Be empathetic, professional, and empowering. Use simple language. The user may b
     }
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content;
+    let reply = data.choices?.[0]?.message?.content;
 
     if (!reply) {
       throw new Error("No response from AI");
+    }
+
+    // Extract case type and track it
+    let caseTypeName = 'general';
+    const separatorIndex = reply.indexOf('---');
+    if (separatorIndex !== -1 && separatorIndex < 50) {
+      caseTypeName = reply.substring(0, separatorIndex).trim().toLowerCase().replace(/\s+/g, '_');
+      reply = reply.substring(separatorIndex + 3).trim();
+    }
+
+    // Track the case in the database (fire-and-forget)
+    try {
+      // Check if case type exists, if not create it
+      const { data: existingType } = await supabase
+        .from('case_types')
+        .select('id')
+        .eq('name', caseTypeName)
+        .maybeSingle();
+
+      let caseTypeId: string;
+      if (existingType) {
+        caseTypeId = existingType.id;
+      } else {
+        const displayName = caseTypeName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+        const { data: newType } = await supabase
+          .from('case_types')
+          .insert({ name: caseTypeName, display_name: displayName })
+          .select('id')
+          .single();
+        caseTypeId = newType?.id;
+      }
+
+      if (caseTypeId) {
+        await supabase
+          .from('case_records')
+          .insert({
+            case_type_id: caseTypeId,
+            status: 'solved',
+            language: language || 'en',
+          });
+      }
+    } catch (trackErr) {
+      console.error("Case tracking error (non-fatal):", trackErr);
     }
 
     return new Response(

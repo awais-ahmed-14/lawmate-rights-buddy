@@ -14,10 +14,82 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      case_records: {
+        Row: {
+          case_type_id: string
+          created_at: string
+          id: string
+          language: string | null
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          case_type_id: string
+          created_at?: string
+          id?: string
+          language?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          case_type_id?: string
+          created_at?: string
+          id?: string
+          language?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_records_case_type_id_fkey"
+            columns: ["case_type_id"]
+            isOneToOne: false
+            referencedRelation: "case_analytics"
+            referencedColumns: ["case_type_id"]
+          },
+          {
+            foreignKeyName: "case_records_case_type_id_fkey"
+            columns: ["case_type_id"]
+            isOneToOne: false
+            referencedRelation: "case_types"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_types: {
+        Row: {
+          created_at: string
+          display_name: string
+          id: string
+          name: string
+        }
+        Insert: {
+          created_at?: string
+          display_name: string
+          id?: string
+          name: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      case_analytics: {
+        Row: {
+          case_type_id: string | null
+          display_name: string | null
+          name: string | null
+          solved_cases: number | null
+          success_rate: number | null
+          total_cases: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

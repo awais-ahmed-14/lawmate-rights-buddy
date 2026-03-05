@@ -1,27 +1,15 @@
-import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Phone, Mail, MessageCircle, Paperclip, Shield, X } from 'lucide-react';
-import { EvidenceLocker } from './EvidenceLocker';
+import { Phone, Mail, MessageCircle } from 'lucide-react';
 
 export const Contact = () => {
   const { t } = useTranslation();
-  const [showEvidence, setShowEvidence] = useState(false);
-  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
-
-  const handleAttachEvidence = (files: File[]) => {
-    setAttachedFiles(files);
-  };
 
   const handleSendMail = () => {
-    const subject = encodeURIComponent('Legal Complaint with Evidence - Lawmate');
+    const subject = encodeURIComponent('Legal Complaint - Lawmate');
     const body = encodeURIComponent(
-      `Dear Sir/Madam,\n\nI am writing to report a legal issue that requires your attention.\n\n` +
-      (attachedFiles.length > 0
-        ? `I have ${attachedFiles.length} evidence file(s) to submit:\n${attachedFiles.map(f => `- ${f.name}`).join('\n')}\n\n`
-        : '') +
-      `Please take necessary action.\n\nRegards`
+      `Dear Sir/Madam,\n\nI am writing to report a legal issue that requires your attention.\n\nPlease take necessary action.\n\nRegards`
     );
     window.open(`mailto:awaisahmedmbnr@outlook.com?subject=${subject}&body=${body}`, '_self');
   };
@@ -62,42 +50,7 @@ export const Contact = () => {
               </Button>
               <p className="text-center text-sm font-semibold">+91 8897166877</p>
 
-              {/* Mail with Evidence */}
-              <div className="border-t pt-4 space-y-3">
-                <Button
-                  variant="outline"
-                  className="w-full"
-                  size="lg"
-                  onClick={() => setShowEvidence(!showEvidence)}
-                >
-                  <Paperclip className="mr-2 h-5 w-5" />
-                  {showEvidence
-                    ? t('contact.hideEvidence', 'Hide Evidence Locker')
-                    : t('contact.attachEvidence', 'Attach Evidence & Mail')}
-                </Button>
-
-                {attachedFiles.length > 0 && (
-                  <div className="bg-muted/50 rounded-lg p-3 space-y-1">
-                    <p className="text-xs font-medium flex items-center gap-1">
-                      <Shield className="h-3 w-3 text-green-600" />
-                      {attachedFiles.length} file(s) attached
-                    </p>
-                    {attachedFiles.map((f, i) => (
-                      <div key={i} className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span className="truncate">{f.name}</span>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-5 w-5 p-0"
-                          onClick={() => setAttachedFiles(prev => prev.filter((_, idx) => idx !== i))}
-                        >
-                          <X className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
+              <div className="border-t pt-4">
                 <Button
                   className="w-full"
                   size="lg"
@@ -143,13 +96,6 @@ export const Contact = () => {
             </CardContent>
           </Card>
         </div>
-
-        {/* Evidence Locker - shown when toggled */}
-        {showEvidence && (
-          <div className="mt-6 animate-fade-in">
-            <EvidenceLocker onFilesChanged={handleAttachEvidence} />
-          </div>
-        )}
       </div>
     </section>
   );

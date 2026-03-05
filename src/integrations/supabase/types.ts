@@ -16,28 +16,37 @@ export type Database = {
     Tables: {
       case_records: {
         Row: {
+          admin_reply: string | null
           case_type_id: string
           created_at: string
           id: string
           language: string | null
           resolved_at: string | null
           status: string
+          user_email: string | null
+          user_message: string | null
         }
         Insert: {
+          admin_reply?: string | null
           case_type_id: string
           created_at?: string
           id?: string
           language?: string | null
           resolved_at?: string | null
           status?: string
+          user_email?: string | null
+          user_message?: string | null
         }
         Update: {
+          admin_reply?: string | null
           case_type_id?: string
           created_at?: string
           id?: string
           language?: string | null
           resolved_at?: string | null
           status?: string
+          user_email?: string | null
+          user_message?: string | null
         }
         Relationships: [
           {

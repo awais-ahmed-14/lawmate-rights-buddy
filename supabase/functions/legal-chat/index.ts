@@ -122,9 +122,9 @@ Be empathetic, professional, and empowering. Use simple language.`;
       reply = reply.substring(separatorIndex + 3).trim();
     }
 
-    // Track the case in the database (fire-and-forget)
+    // Track the case as PENDING (not solved) - cases are only solved via admin panel
+    let caseRecordId: string | null = null;
     try {
-      // Check if case type exists, if not create it
       const { data: existingType } = await supabase
         .from('case_types')
         .select('id')
@@ -145,20 +145,23 @@ Be empathetic, professional, and empowering. Use simple language.`;
       }
 
       if (caseTypeId) {
-        await supabase
+        const { data: record } = await supabase
           .from('case_records')
           .insert({
             case_type_id: caseTypeId,
-            status: 'solved',
+            status: 'pending',
             language: language || 'en',
-          });
+          })
+          .select('id')
+          .single();
+        caseRecordId = record?.id || null;
       }
     } catch (trackErr) {
       console.error("Case tracking error (non-fatal):", trackErr);
     }
 
     return new Response(
-      JSON.stringify({ reply }),
+      JSON.stringify({ reply, caseRecordId }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 

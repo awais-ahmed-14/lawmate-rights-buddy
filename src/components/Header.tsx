@@ -15,6 +15,7 @@ const languages = [
   { code: 'te', name: 'తెలుగు' },
   { code: 'ta', name: 'தமிழ்' },
   { code: 'bn', name: 'বাংলা' },
+  { code: 'ur', name: 'اردو' },
 ];
 
 export const Header = () => {

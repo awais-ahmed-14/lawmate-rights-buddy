@@ -51,7 +51,8 @@ export const ScenarioInput = () => {
         hi: 'hi-IN',
         ta: 'ta-IN',
         te: 'te-IN',
-        bn: 'bn-IN'
+        bn: 'bn-IN',
+        ur: 'ur-PK'
       };
       recognitionRef.current.lang = langMap[i18n.language] || 'en-IN';
 
@@ -104,7 +105,8 @@ export const ScenarioInput = () => {
       hi: 'hi-IN',
       te: 'te-IN',
       ta: 'ta-IN',
-      bn: 'bn-IN'
+      bn: 'bn-IN',
+      ur: 'ur-PK'
     };
     utterance.lang = langMap[i18n.language] || 'en-IN';
     utterance.rate = 0.9;

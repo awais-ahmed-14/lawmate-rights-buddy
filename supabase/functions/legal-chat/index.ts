@@ -28,7 +28,8 @@ serve(async (req) => {
       hi: 'Hindi (हिंदी)',
       te: 'Telugu (తెలుగు)',
       ta: 'Tamil (தமிழ்)',
-      bn: 'Bengali (বাংলা)'
+      bn: 'Bengali (বাংলা)',
+      ur: 'Urdu (اردو)'
     };
 
     const langName = languageNames[language] || 'English';

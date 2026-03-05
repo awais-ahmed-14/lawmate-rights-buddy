@@ -5,8 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { CheckCircle, Clock, ArrowLeft, Shield, Lock, Loader2 } from 'lucide-react';
+import { CheckCircle, Clock, ArrowLeft, Shield, Lock, Loader2, Mail, MessageSquare, Send } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const ADMIN_PASSWORD = 'lawmate2026';
@@ -16,13 +17,15 @@ const AdminPanel = () => {
   const queryClient = useQueryClient();
   const [authenticated, setAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
+  const [replyTexts, setReplyTexts] = useState<Record<string, string>>({});
+  const [expandedCase, setExpandedCase] = useState<string | null>(null);
 
   const { data: cases, isLoading } = useQuery({
     queryKey: ['admin-cases'],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('case_records')
-        .select('id, status, language, created_at, resolved_at, case_type_id')
+        .select('id, status, language, created_at, resolved_at, case_type_id, user_message, user_email, admin_reply')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data || [];
@@ -42,18 +45,34 @@ const AdminPanel = () => {
     enabled: authenticated,
   });
 
-  const markSolved = useMutation({
-    mutationFn: async (caseId: string) => {
+  const sendReply = useMutation({
+    mutationFn: async ({ caseId, reply }: { caseId: string; reply: string }) => {
+      const isSolved = reply.toLowerCase().includes('solved');
+      const updateData: any = {
+        admin_reply: reply,
+      };
+      if (isSolved) {
+        updateData.status = 'solved';
+        updateData.resolved_at = new Date().toISOString();
+      }
       const { error } = await supabase
         .from('case_records')
-        .update({ status: 'solved', resolved_at: new Date().toISOString() })
+        .update(updateData)
         .eq('id', caseId);
       if (error) throw error;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      const isSolved = variables.reply.toLowerCase().includes('solved');
       queryClient.invalidateQueries({ queryKey: ['admin-cases'] });
       queryClient.invalidateQueries({ queryKey: ['case-analytics'] });
-      toast({ title: 'Case marked as Solved', description: 'Analytics updated.' });
+      setReplyTexts(prev => ({ ...prev, [variables.caseId]: '' }));
+      setExpandedCase(null);
+      toast({
+        title: isSolved ? 'Case Marked as Solved ✅' : 'Reply Sent',
+        description: isSolved
+          ? 'Data analysis statistics updated automatically.'
+          : 'Your reply has been recorded.',
+      });
     },
   });
 
@@ -109,7 +128,7 @@ const AdminPanel = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-heading font-bold">⚖️ Lawmate Admin Panel</h1>
-            <p className="text-sm text-muted-foreground">Mark cases as "Solved" to update analytics</p>
+            <p className="text-sm text-muted-foreground">View case messages & reply with "Solved" to update analytics</p>
           </div>
           <Button variant="outline" asChild>
             <Link to="/"><ArrowLeft className="mr-2 h-4 w-4" /> Home</Link>
@@ -130,33 +149,78 @@ const AdminPanel = () => {
                   Pending Cases ({pendingCases.length})
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-3">
                 {pendingCases.length === 0 ? (
                   <p className="text-muted-foreground text-center py-4">No pending cases</p>
                 ) : (
-                  <div className="space-y-3">
-                    {pendingCases.map((c) => (
-                      <div key={c.id} className="flex items-center justify-between p-3 bg-background rounded-lg border">
+                  pendingCases.map((c) => (
+                    <div key={c.id} className="p-4 bg-background rounded-lg border space-y-3">
+                      <div className="flex items-center justify-between">
                         <div className="space-y-1">
                           <p className="font-medium text-sm">{getCaseTypeName(c.case_type_id)}</p>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 flex-wrap">
                             <Badge variant="outline" className="text-xs">{c.language?.toUpperCase()}</Badge>
                             <span className="text-xs text-muted-foreground">
                               {new Date(c.created_at).toLocaleDateString()}
                             </span>
+                            {c.user_email && (
+                              <span className="text-xs text-muted-foreground flex items-center gap-1">
+                                <Mail className="h-3 w-3" /> {c.user_email}
+                              </span>
+                            )}
                           </div>
                         </div>
                         <Button
                           size="sm"
-                          onClick={() => markSolved.mutate(c.id)}
-                          disabled={markSolved.isPending}
+                          variant="outline"
+                          onClick={() => setExpandedCase(expandedCase === c.id ? null : c.id)}
                         >
-                          <CheckCircle className="mr-1.5 h-4 w-4" />
-                          Mark Solved
+                          <MessageSquare className="mr-1.5 h-4 w-4" />
+                          {expandedCase === c.id ? 'Close' : 'View & Reply'}
                         </Button>
                       </div>
-                    ))}
-                  </div>
+
+                      {/* User message */}
+                      {c.user_message && (
+                        <div className="bg-muted/50 p-3 rounded-md">
+                          <p className="text-xs font-medium text-muted-foreground mb-1">User's Message:</p>
+                          <p className="text-sm">{c.user_message}</p>
+                        </div>
+                      )}
+
+                      {/* Reply area */}
+                      {expandedCase === c.id && (
+                        <div className="space-y-2 pt-2 border-t">
+                          <Textarea
+                            placeholder='Type your reply... Include the word "Solved" to mark this case as resolved.'
+                            value={replyTexts[c.id] || ''}
+                            onChange={(e) => setReplyTexts(prev => ({ ...prev, [c.id]: e.target.value }))}
+                            className="min-h-[80px]"
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => sendReply.mutate({ caseId: c.id, reply: replyTexts[c.id] || '' })}
+                              disabled={!replyTexts[c.id]?.trim() || sendReply.isPending}
+                            >
+                              <Send className="mr-1.5 h-4 w-4" />
+                              Send Reply
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="default"
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                              onClick={() => sendReply.mutate({ caseId: c.id, reply: 'Solved' })}
+                              disabled={sendReply.isPending}
+                            >
+                              <CheckCircle className="mr-1.5 h-4 w-4" />
+                              Mark Solved
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ))
                 )}
               </CardContent>
             </Card>
@@ -169,13 +233,13 @@ const AdminPanel = () => {
                   Solved Cases ({solvedCases.length})
                 </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="space-y-2">
                 {solvedCases.length === 0 ? (
                   <p className="text-muted-foreground text-center py-4">No solved cases yet</p>
                 ) : (
-                  <div className="space-y-2">
-                    {solvedCases.slice(0, 20).map((c) => (
-                      <div key={c.id} className="flex items-center justify-between p-3 bg-background rounded-lg border">
+                  solvedCases.slice(0, 20).map((c) => (
+                    <div key={c.id} className="p-3 bg-background rounded-lg border space-y-2">
+                      <div className="flex items-center justify-between">
                         <div className="space-y-1">
                           <p className="font-medium text-sm">{getCaseTypeName(c.case_type_id)}</p>
                           <div className="flex gap-2">
@@ -186,8 +250,14 @@ const AdminPanel = () => {
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      {c.admin_reply && (
+                        <div className="bg-green-50 dark:bg-green-950/30 p-2 rounded text-sm">
+                          <span className="text-xs font-medium text-green-700 dark:text-green-400">Admin Reply: </span>
+                          {c.admin_reply}
+                        </div>
+                      )}
+                    </div>
+                  ))
                 )}
               </CardContent>
             </Card>

@@ -175,6 +175,11 @@ export const ScenarioInput = () => {
       if (data?.reply) {
         setMessages(prev => [...prev, { role: 'assistant', content: data.reply }]);
         
+        // Store detected case type for mail subject auto-fill
+        if (data.caseType) {
+          localStorage.setItem('lawmate_case_topic', data.caseType);
+        }
+        
         // Automatically speak the AI response
         speakText(data.reply);
       }

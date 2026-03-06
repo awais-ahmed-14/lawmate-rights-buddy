@@ -115,54 +115,17 @@ Be empathetic, professional, and empowering. Use simple language.`;
       throw new Error("No response from AI");
     }
 
-    // Extract case type and track it
-    let caseTypeName = 'general';
+    // Extract case type label (for display) but do NOT create case records
+    // Cases are only registered when user sends mail to authority
+    let caseTypeLabel = '';
     const separatorIndex = reply.indexOf('---');
     if (separatorIndex !== -1 && separatorIndex < 50) {
-      caseTypeName = reply.substring(0, separatorIndex).trim().toLowerCase().replace(/\s+/g, '_');
+      caseTypeLabel = reply.substring(0, separatorIndex).trim();
       reply = reply.substring(separatorIndex + 3).trim();
     }
 
-    // Track the case as PENDING (not solved) - cases are only solved via admin panel
-    let caseRecordId: string | null = null;
-    try {
-      const { data: existingType } = await supabase
-        .from('case_types')
-        .select('id')
-        .eq('name', caseTypeName)
-        .maybeSingle();
-
-      let caseTypeId: string;
-      if (existingType) {
-        caseTypeId = existingType.id;
-      } else {
-        const displayName = caseTypeName.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-        const { data: newType } = await supabase
-          .from('case_types')
-          .insert({ name: caseTypeName, display_name: displayName })
-          .select('id')
-          .single();
-        caseTypeId = newType?.id;
-      }
-
-      if (caseTypeId) {
-        const { data: record } = await supabase
-          .from('case_records')
-          .insert({
-            case_type_id: caseTypeId,
-            status: 'pending',
-            language: language || 'en',
-          })
-          .select('id')
-          .single();
-        caseRecordId = record?.id || null;
-      }
-    } catch (trackErr) {
-      console.error("Case tracking error (non-fatal):", trackErr);
-    }
-
     return new Response(
-      JSON.stringify({ reply, caseRecordId }),
+      JSON.stringify({ reply, caseType: caseTypeLabel }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
 

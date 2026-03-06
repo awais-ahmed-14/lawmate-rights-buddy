@@ -1,7 +1,8 @@
 import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
-import { Globe, Menu, X, BarChart3, Bot } from 'lucide-react';
+import { Globe, Menu, X, BarChart3, Bot, Shield } from 'lucide-react';
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,6 +69,19 @@ export const Header = () => {
         </nav>
 
         <div className="flex items-center gap-2">
+          {/* Admin Login Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            asChild
+            className="gap-1.5 hidden sm:flex"
+          >
+            <Link to="/admin">
+              <Shield className="h-4 w-4" />
+              <span className="hidden lg:inline">{t('header.nav.admin', 'Admin')}</span>
+            </Link>
+          </Button>
+
           {/* Data Analysis Button */}
           <Button
             variant="outline"
@@ -133,6 +147,10 @@ export const Header = () => {
               <BarChart3 className="h-3.5 w-3.5" />
               {t('header.nav.analytics', 'Analytics')}
             </button>
+            <Link to="/admin" className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1" onClick={() => setMobileMenuOpen(false)}>
+              <Shield className="h-3.5 w-3.5" />
+              {t('header.nav.admin', 'Admin Login')}
+            </Link>
             <button onClick={() => scrollToSection('about')} className="text-sm font-medium text-left transition-colors hover:text-primary">
               {t('header.nav.about')}
             </button>

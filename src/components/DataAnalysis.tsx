@@ -1,6 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart3, TrendingUp, CheckCircle, Users, Loader2 } from 'lucide-react';
+import { BarChart3, TrendingUp, CheckCircle, Users, Loader2, XCircle } from 'lucide-react';
 import {
   ChartContainer,
   ChartTooltip,
@@ -50,6 +50,7 @@ export const DataAnalysis = () => {
 
   const totalCases = caseData.reduce((sum, c) => sum + c.total, 0);
   const totalSolved = caseData.reduce((sum, c) => sum + c.solved, 0);
+  const totalUnsolved = totalCases - totalSolved;
   const overallRate = totalCases > 0 ? Math.round((totalSolved / totalCases) * 100) : 0;
 
   if (isLoading) {
@@ -75,7 +76,7 @@ export const DataAnalysis = () => {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
           <Card className="hover-lift">
             <CardContent className="p-6 text-center">
               <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
@@ -95,6 +96,13 @@ export const DataAnalysis = () => {
               <TrendingUp className="h-8 w-8 mx-auto mb-2 text-primary" />
               <p className="text-3xl font-bold text-primary">{overallRate}%</p>
               <p className="text-sm text-muted-foreground">{t('dataAnalysis.successRate', 'Success Rate')}</p>
+            </CardContent>
+          </Card>
+          <Card className="hover-lift">
+            <CardContent className="p-6 text-center">
+              <XCircle className="h-8 w-8 mx-auto mb-2 text-red-500" />
+              <p className="text-3xl font-bold text-red-500">{totalUnsolved.toLocaleString()}</p>
+              <p className="text-sm text-muted-foreground">{t('dataAnalysis.unsolvedCases', 'Not Solved')}</p>
             </CardContent>
           </Card>
           <Card className="hover-lift">

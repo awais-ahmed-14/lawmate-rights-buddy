@@ -91,13 +91,24 @@ export const ScenarioInput = () => {
     };
   }, [i18n.language, toast]);
 
+  const cleanTextForSpeech = (text: string): string => {
+    return text
+      .replace(/\*\*/g, '')
+      .replace(/[#*_~`>|•]/g, '')
+      .replace(/^\s*[-]\s*/gm, '')
+      .replace(/^\s*\d+\.\s*/gm, '')
+      .replace(/⚖️|📋|📖|🏛️|👉|🛡️/g, '')
+      .replace(/\n{2,}/g, '\n')
+      .trim();
+  };
+
   const speakText = (text: string) => {
     if (!synthRef.current) return;
 
-    // Cancel any ongoing speech
     synthRef.current.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    const cleanedText = cleanTextForSpeech(text);
+    const utterance = new SpeechSynthesisUtterance(cleanedText);
     
     // Set language based on i18n
     const langMap: { [key: string]: string } = {

@@ -91,14 +91,14 @@
         "Article 17: Abolition of untouchability",
         "Article 18: Abolition of titles except military and academic distinctions"
       ],
-      "example": "In the landmark case of Kesavananda Bharati v. State of Kerala, the Supreme Court held that equality is part of the basic structure of the Constitution. In another case, a woman was denied employment based on her gender, and the court ruled in her favor citing Article 15 and 16.",
-      "howTo": "If you face discrimination, document all instances with dates and witnesses. File a complaint with the National Human Rights Commission or approach the courts directly. Legal aid is available for those who cannot afford legal representation."
+      "example": "In the landmark case of Kesavananda Bharati v. State of Kerala, the Supreme Court held that equality is part of the basic structure of the Constitution.",
+      "howTo": "If you face discrimination, document all instances with dates and witnesses. File a complaint with the National Human Rights Commission or approach the courts directly."
     },
     "freedom": {
       "title": "Right to Freedom",
       "description": "Protects freedoms of speech, assembly, association, movement, residence, and profession",
       "articles": "Articles 19-22",
-      "detailed": "The Right to Freedom guarantees six fundamental freedoms to all citizens: freedom of speech and expression, assembly, association, movement, residence, and profession. It also provides protection against arrest and detention in certain cases and ensures certain rights to persons arrested under normal circumstances.",
+      "detailed": "The Right to Freedom guarantees six fundamental freedoms to all citizens: freedom of speech and expression, assembly, association, movement, residence, and profession.",
       "provisions": [
         "Article 19: Six freedoms - speech, assembly, association, movement, residence, and profession",
         "Article 20: Protection in respect of conviction for offenses",
@@ -106,14 +106,14 @@
         "Article 21A: Right to education for children aged 6-14 years",
         "Article 22: Protection against arrest and detention in certain cases"
       ],
-      "example": "In the famous case of Maneka Gandhi v. Union of India, the Supreme Court expanded the scope of Article 21 to include the right to live with human dignity. Citizens regularly exercise their right to peaceful protest under Article 19, which has been upheld by courts numerous times.",
-      "howTo": "To exercise these freedoms, ensure your actions are lawful and do not violate reasonable restrictions. If your rights are violated, approach the courts or human rights commissions. Document any instances of rights violations with evidence and seek legal counsel immediately."
+      "example": "In the famous case of Maneka Gandhi v. Union of India, the Supreme Court expanded the scope of Article 21 to include the right to live with human dignity.",
+      "howTo": "To exercise these freedoms, ensure your actions are lawful and do not violate reasonable restrictions. If your rights are violated, approach the courts or human rights commissions."
     },
     "exploitation": {
       "title": "Right Against Exploitation",
       "description": "Prohibits trafficking, forced labor, and child labor",
       "articles": "Articles 23-24",
-      "detailed": "The Right Against Exploitation protects vulnerable sections of society from being exploited. It prohibits human trafficking and forced labor (begar), and prohibits the employment of children below 14 years in factories, mines, or other hazardous occupations.",
+      "detailed": "The Right Against Exploitation protects vulnerable sections of society from being exploited. It prohibits human trafficking and forced labor, and prohibits employment of children below 14 years in hazardous occupations.",
       "provisions": [
         "Article 23: Prohibition of traffic in human beings and forced labor",
         "Article 23(1): Traffic in human beings and begar (forced labor) are prohibited",
@@ -121,14 +121,14 @@
         "Article 24: Prohibition of employment of children in factories and hazardous occupations",
         "Article 24: No child below 14 years can be employed in factories, mines, or other hazardous work"
       ],
-      "example": "In Bandhua Mukti Morcha v. Union of India, the Supreme Court directed the release of bonded laborers and their rehabilitation. In another case involving child labor in a factory, the employer was prosecuted under Article 24, and the children were provided education and rehabilitation.",
-      "howTo": "If you or someone you know is facing exploitation, immediately contact the local police, labor department, or childline (1098 for children). NGOs and legal aid organizations can provide assistance. Document evidence of exploitation and seek immediate legal intervention."
+      "example": "In Bandhua Mukti Morcha v. Union of India, the Supreme Court directed the release of bonded laborers and their rehabilitation.",
+      "howTo": "If you or someone you know is facing exploitation, immediately contact the local police, labor department, or childline (1098 for children)."
     },
     "religion": {
       "title": "Right to Freedom of Religion",
       "description": "Ensures religious freedom and the right to manage religious institutions",
       "articles": "Articles 25-28",
-      "detailed": "The Right to Freedom of Religion ensures that all persons are equally entitled to freedom of conscience and the right to freely profess, practice, and propagate religion. Subject to public order, morality, and health, every religious group has the right to establish and maintain institutions for religious and charitable purposes, manage its own affairs in matters of religion, and own property.",
+      "detailed": "The Right to Freedom of Religion ensures that all persons are equally entitled to freedom of conscience and the right to freely profess, practice, and propagate religion.",
       "provisions": [
         "Article 25: Freedom of conscience and free profession, practice, and propagation of religion",
         "Article 26: Freedom to manage religious affairs",
@@ -136,14 +136,14 @@
         "Article 28: Freedom from attending religious instruction or worship in educational institutions",
         "State can regulate or restrict economic, financial, political activities associated with religious practices"
       ],
-      "example": "In the case of Commissioner, Hindu Religious Endowments v. Sri Lakshmindra Thirtha Swamiar, the Supreme Court held that the freedom of religion includes the right to manage religious institutions. In another case, forced religious conversion was struck down as violating Article 25.",
-      "howTo": "You can freely practice your religion within legal bounds. If you face discrimination or persecution based on religion, file a complaint with police or approach the courts. The National Human Rights Commission also addresses religious discrimination cases. Document all incidents and seek legal advice."
+      "example": "In the case of Commissioner, Hindu Religious Endowments v. Sri Lakshmindra Thirtha Swamiar, the Supreme Court held that the freedom of religion includes the right to manage religious institutions.",
+      "howTo": "You can freely practice your religion within legal bounds. If you face discrimination or persecution based on religion, file a complaint with police or approach the courts."
     },
     "cultural": {
       "title": "Cultural & Educational Rights",
       "description": "Protects rights of minorities to conserve culture and establish educational institutions",
       "articles": "Articles 29-30",
-      "detailed": "Cultural and Educational Rights protect the interests of minorities by ensuring their right to conserve their distinct language, script, and culture. Minorities have the right to establish and administer educational institutions of their choice. The State cannot discriminate against any educational institution on the ground that it is under the management of a minority group.",
+      "detailed": "Cultural and Educational Rights protect the interests of minorities by ensuring their right to conserve their distinct language, script, and culture.",
       "provisions": [
         "Article 29: Protection of interests of minorities - right to conserve distinct language, script, or culture",
         "Article 29(2): No citizen shall be denied admission to educational institutions on grounds of religion, race, caste, or language",
@@ -151,14 +151,14 @@
         "Article 30(1): All minorities have the right to establish and administer educational institutions of their choice",
         "Article 30(2): State shall not discriminate in granting aid to educational institutions on the ground of minority management"
       ],
-      "example": "In St. Stephen's College v. University of Delhi, the Supreme Court upheld the right of minority institutions to have their own admission procedures. In another case, denial of admission to a student based on religion was struck down under Article 29(2).",
-      "howTo": "If you're part of a minority community and wish to establish an educational institution, you have constitutional protection. If you face discrimination in admission or face threats to your cultural practices, approach the National Commission for Minorities or the courts with proper documentation."
+      "example": "In St. Stephen's College v. University of Delhi, the Supreme Court upheld the right of minority institutions to have their own admission procedures.",
+      "howTo": "If you're part of a minority community and wish to establish an educational institution, you have constitutional protection."
     },
     "remedies": {
       "title": "Right to Constitutional Remedies",
       "description": "Guarantees the right to approach courts for enforcement of Fundamental Rights",
       "articles": "Article 32",
-      "detailed": "The Right to Constitutional Remedies is considered the 'heart and soul' of the Constitution. It guarantees citizens the right to move the Supreme Court for the enforcement of their Fundamental Rights. The Supreme Court can issue directions, orders, or writs for the enforcement of these rights. This right itself is a Fundamental Right.",
+      "detailed": "The Right to Constitutional Remedies is considered the 'heart and soul' of the Constitution. It guarantees citizens the right to move the Supreme Court for the enforcement of their Fundamental Rights.",
       "provisions": [
         "Article 32: Right to constitutional remedies including writs",
         "Article 32(1): Right to move Supreme Court for enforcement of Fundamental Rights",
@@ -166,8 +166,8 @@
         "Article 226: High Courts can also issue writs but with wider jurisdiction",
         "This right cannot be suspended except during Emergency"
       ],
-      "example": "In Minerva Mills v. Union of India, the Supreme Court held that Article 32 is a basic feature of the Constitution and cannot be taken away. Countless citizens have used Article 32 to approach the Supreme Court when their rights were violated, from environmental issues to personal liberty cases.",
-      "howTo": "If your Fundamental Rights are violated, you can directly file a writ petition in the Supreme Court under Article 32 or in the High Court under Article 226. Legal aid is available if you cannot afford a lawyer. Document all evidence of rights violation and consult a constitutional lawyer for proper guidance."
+      "example": "In Minerva Mills v. Union of India, the Supreme Court held that Article 32 is a basic feature of the Constitution and cannot be taken away.",
+      "howTo": "If your Fundamental Rights are violated, you can directly file a writ petition in the Supreme Court under Article 32 or in the High Court under Article 226."
     }
   },
   "scenarioInput": {
@@ -199,13 +199,19 @@
   "contact": {
     "title": "Need Legal Help?",
     "subtitle": "Reach out directly for assistance",
-    "headTitle": "Contact the Head of the Area",
-    "headDescription": "Direct line to the Head / Leader of the Area",
+    "headTitle": "Contact Head of the Area or Lawyer",
+    "headDescription": "Direct line to the Head / Leader of the Area or assigned Lawyer",
     "headNote": "The Head of the Area represents the developer and oversees this region's legal assistance support.",
-    "callHead": "Call the Head of the Area",
+    "callHead": "Call Head of the Area or Lawyer",
     "email": "Send Email",
     "callSupport": "Support Helpline",
-    "whatsapp": "Chat on WhatsApp"
+    "whatsapp": "Chat on WhatsApp",
+    "enterComplaint": "Enter Your Complaint",
+    "complaintPlaceholder": "Describe your complaint in detail before sending mail..."
+  },
+  "districtMap": {
+    "title": "Telangana District Lawyer Map",
+    "subtitle": "Find and contact lawyers assigned to your district"
   },
   "footer": {
     "copyright": "© 2025 LAWMATE. All rights reserved.",

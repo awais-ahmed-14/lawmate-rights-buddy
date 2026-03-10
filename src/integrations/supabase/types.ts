@@ -25,6 +25,7 @@ export type Database = {
           status: string
           user_email: string | null
           user_message: string | null
+          user_phone: string | null
         }
         Insert: {
           admin_reply?: string | null
@@ -36,6 +37,7 @@ export type Database = {
           status?: string
           user_email?: string | null
           user_message?: string | null
+          user_phone?: string | null
         }
         Update: {
           admin_reply?: string | null
@@ -47,6 +49,7 @@ export type Database = {
           status?: string
           user_email?: string | null
           user_message?: string | null
+          user_phone?: string | null
         }
         Relationships: [
           {
@@ -83,6 +86,69 @@ export type Database = {
           display_name?: string
           id?: string
           name?: string
+        }
+        Relationships: []
+      }
+      lawyers: {
+        Row: {
+          approved: boolean | null
+          created_at: string | null
+          district: string
+          email: string
+          id: string
+          name: string
+          password1: string
+          password2: string
+          phone: string
+          verification_file_url: string | null
+        }
+        Insert: {
+          approved?: boolean | null
+          created_at?: string | null
+          district: string
+          email: string
+          id?: string
+          name: string
+          password1: string
+          password2: string
+          phone: string
+          verification_file_url?: string | null
+        }
+        Update: {
+          approved?: boolean | null
+          created_at?: string | null
+          district?: string
+          email?: string
+          id?: string
+          name?: string
+          password1?: string
+          password2?: string
+          phone?: string
+          verification_file_url?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string | null
+          email: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
         }
         Relationships: []
       }

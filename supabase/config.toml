@@ -2,3 +2,6 @@ project_id = "rqkobnwwarquuetleocv"
 
 [functions.legal-chat]
 verify_jwt = false
+
+[functions.lawyer-auth]
+verify_jwt = false

@@ -7,11 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   CheckCircle, XCircle, Clock, ArrowLeft, Shield, Lock, Loader2,
-  Mail, MessageSquare, Send, UserPlus, LogIn, Phone, MapPin, Upload, Users
+  Mail, MessageSquare, Send, UserPlus, LogIn, Phone, Upload, Users, FileText, Eye
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -29,6 +28,7 @@ const AdminPanel = () => {
   const [view, setView] = useState<'menu' | 'register' | 'lawyer-login' | 'lawyer-dashboard' | 'super-admin' | 'super-dashboard'>('menu');
   const [lawyerId, setLawyerId] = useState<string | null>(null);
   const [lawyerDistrict, setLawyerDistrict] = useState<string>('');
+  const [lawyerName, setLawyerName] = useState<string>('');
 
   // Registration state
   const [regName, setRegName] = useState('');
@@ -78,23 +78,24 @@ const AdminPanel = () => {
     enabled: view === 'lawyer-dashboard' || view === 'super-dashboard',
   });
 
-  const { data: pendingLawyers } = useQuery({
-    queryKey: ['pending-lawyers'],
+  // Fetch ALL lawyers for super admin using edge function
+  const { data: allLawyers } = useQuery({
+    queryKey: ['all-lawyers'],
     queryFn: async () => {
-      // Super admin can see all lawyers via service role (but we query client-side)
-      // Since RLS only allows approved=true for SELECT, super admin needs edge function
-      // For now, showing approved lawyers. Approval done via edge function.
-      const { data, error } = await (supabase.from as any)('lawyers')
-        .select('id, name, email, phone, district, approved, created_at');
-      if (error) throw error;
-      return data || [];
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lawyer-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+        body: JSON.stringify({ action: 'list-all' }),
+      });
+      const data = await res.json();
+      return data.lawyers || [];
     },
     enabled: view === 'super-dashboard',
   });
 
   const sendReply = useMutation({
     mutationFn: async ({ caseId, reply, markAs }: { caseId: string; reply: string; markAs?: 'solved' | 'not_solved' }) => {
-      const updateData: any = { admin_reply: reply };
+      const updateData: Record<string, string> = { admin_reply: reply };
       if (markAs === 'solved') { updateData.status = 'solved'; updateData.resolved_at = new Date().toISOString(); }
       else if (markAs === 'not_solved') { updateData.status = 'not_solved'; }
       const { error } = await supabase.from('case_records').update(updateData).eq('id', caseId);
@@ -129,7 +130,7 @@ const AdminPanel = () => {
         password1: regP1, password2: regP2,
       });
       if (error) throw error;
-      toast({ title: 'Registration Submitted ✅', description: 'Your registration is pending approval.' });
+      toast({ title: 'Registration Submitted ✅', description: 'Your registration is pending approval by super admin.' });
       setView('menu');
     } catch (err: any) {
       toast({ title: 'Error', description: err.message, variant: 'destructive' });
@@ -153,6 +154,7 @@ const AdminPanel = () => {
       if (!res.ok) throw new Error(data.error || 'Login failed');
       setLawyerId(data.lawyer.id);
       setLawyerDistrict(data.lawyer.district);
+      setLawyerName(data.lawyer.name);
       setView('lawyer-dashboard');
       toast({ title: `Welcome, ${data.lawyer.name} ✅` });
     } catch (err: any) {
@@ -167,6 +169,22 @@ const AdminPanel = () => {
       setView('super-dashboard');
     } else {
       toast({ title: 'Access Denied', variant: 'destructive' });
+    }
+  };
+
+  const handleApproveLawyer = async (id: string, approve: boolean) => {
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lawyer-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+        body: JSON.stringify({ action: 'approve', lawyerId: id, approved: approve }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed');
+      queryClient.invalidateQueries({ queryKey: ['all-lawyers'] });
+      toast({ title: approve ? 'Lawyer Approved ✅' : 'Lawyer Rejected ❌' });
+    } catch (err: any) {
+      toast({ title: 'Error', description: err.message, variant: 'destructive' });
     }
   };
 
@@ -208,7 +226,7 @@ const AdminPanel = () => {
         <Card className="w-full max-w-lg shadow-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2"><UserPlus className="h-5 w-5" /> Lawyer Registration</CardTitle>
-            <CardDescription>Register as a district lawyer. Your registration will be reviewed.</CardDescription>
+            <CardDescription>Register as a district lawyer. Your registration will be reviewed by the super admin.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <Input placeholder="Full Name" value={regName} onChange={e => setRegName(e.target.value)} />
@@ -238,7 +256,7 @@ const AdminPanel = () => {
     );
   }
 
-  // Lawyer login
+  // Lawyer login (merged - single login for lawyers)
   if (view === 'lawyer-login') {
     return (
       <div className="min-h-screen flex items-center justify-center bg-muted/30 p-4">
@@ -285,13 +303,10 @@ const AdminPanel = () => {
   }
 
   // Case dashboard (shared between lawyer and super admin)
-  const filteredCases = view === 'lawyer-dashboard'
-    ? cases?.filter(() => true) // Lawyers see all cases for now
-    : cases;
-
-  const pendingCases = filteredCases?.filter(c => c.status === 'pending') || [];
-  const solvedCases = filteredCases?.filter(c => c.status === 'solved') || [];
-  const notSolvedCases = filteredCases?.filter(c => c.status === 'not_solved') || [];
+  const filteredCases = cases || [];
+  const pendingCases = filteredCases.filter(c => c.status === 'pending');
+  const solvedCases = filteredCases.filter(c => c.status === 'solved');
+  const notSolvedCases = filteredCases.filter(c => c.status === 'not_solved');
 
   return (
     <div className="min-h-screen bg-muted/30">
@@ -299,7 +314,7 @@ const AdminPanel = () => {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-2xl font-heading font-bold">
-              {view === 'super-dashboard' ? '🔐 Super Admin Panel' : '⚖️ Lawyer Dashboard'}
+              {view === 'super-dashboard' ? '🔐 Super Admin Panel' : `⚖️ ${lawyerName}'s Dashboard`}
             </h1>
             <p className="text-sm text-muted-foreground">
               {view === 'super-dashboard' ? 'Manage lawyers and review all cases' : `District: ${lawyerDistrict}`}
@@ -315,26 +330,48 @@ const AdminPanel = () => {
           </div>
         </div>
 
-        {/* Super Admin: Lawyer approvals */}
-        {view === 'super-dashboard' && pendingLawyers && pendingLawyers.length > 0 && (
+        {/* Super Admin: Lawyer approval section */}
+        {view === 'super-dashboard' && allLawyers && (
           <Card className="shadow-lg mb-6">
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
-                <Users className="h-5 w-5 text-primary" /> Registered Lawyers ({pendingLawyers.length})
+                <Users className="h-5 w-5 text-primary" /> Lawyer Registrations ({allLawyers.length})
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {pendingLawyers.map((l: any) => (
-                <div key={l.id} className="p-4 bg-background rounded-lg border flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{l.name}</p>
-                    <p className="text-xs text-muted-foreground">{l.email} · {l.phone} · {l.district}</p>
+              {allLawyers.length === 0 ? (
+                <p className="text-muted-foreground text-center py-4">No lawyer registrations yet</p>
+              ) : (
+                allLawyers.map((l: any) => (
+                  <div key={l.id} className="p-4 bg-background rounded-lg border space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium">{l.name}</p>
+                        <p className="text-xs text-muted-foreground">{l.email} · {l.phone} · {l.district}</p>
+                      </div>
+                      <Badge variant={l.approved ? 'secondary' : 'destructive'}>
+                        {l.approved ? 'Approved' : 'Pending'}
+                      </Badge>
+                    </div>
+                    {l.verification_file_url && (
+                      <div className="flex items-center gap-2">
+                        <FileText className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-xs text-muted-foreground">Verification file uploaded</span>
+                      </div>
+                    )}
+                    {!l.approved && (
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" className="bg-green-600 hover:bg-green-700 text-white" onClick={() => handleApproveLawyer(l.id, true)}>
+                          <CheckCircle className="mr-1 h-3 w-3" /> Approve
+                        </Button>
+                        <Button size="sm" variant="destructive" onClick={() => handleApproveLawyer(l.id, false)}>
+                          <XCircle className="mr-1 h-3 w-3" /> Reject
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                  <Badge variant={l.approved ? 'secondary' : 'destructive'}>
-                    {l.approved ? 'Approved' : 'Pending'}
-                  </Badge>
-                </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
         )}

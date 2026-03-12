@@ -6,11 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Scale, BookOpen, Landmark, Shield, Loader2, Mail, Lock, Phone, User } from 'lucide-react';
+import { Scale, BookOpen, Landmark, Shield, Loader2, Mail, Lock, Phone, User, Gavel } from 'lucide-react';
 
 const FloatingIcon = ({ icon: Icon, className }: { icon: any; className: string }) => (
-  <div className={`absolute opacity-10 ${className}`}>
-    <Icon className="h-16 w-16 text-primary" />
+  <div className={`absolute ${className}`}>
+    <Icon className="h-16 w-16 text-primary/10" />
   </div>
 );
 
@@ -55,25 +55,26 @@ const Auth = () => {
       password: signupPassword,
       options: {
         data: { full_name: signupName, phone: signupPhone },
+        emailRedirectTo: window.location.origin,
       },
     });
     setLoading(false);
     if (error) {
       toast({ title: 'Signup Failed', description: error.message, variant: 'destructive' });
     } else {
-      toast({ title: 'Account Created ✅', description: 'You can now log in.' });
-      navigate('/', { replace: true });
+      toast({ title: 'Account Created ✅', description: 'Please check your email to verify, then log in.' });
     }
   };
 
   return (
     <div className="min-h-screen flex relative overflow-hidden bg-gradient-to-br from-primary/5 via-background to-accent/5">
       {/* Floating Legal Symbols */}
-      <FloatingIcon icon={Scale} className="top-10 left-10 animate-bounce" />
-      <FloatingIcon icon={BookOpen} className="top-1/4 right-16 animate-pulse" />
-      <FloatingIcon icon={Landmark} className="bottom-20 left-20 animate-pulse" />
-      <FloatingIcon icon={Shield} className="bottom-10 right-10 animate-bounce" />
-      <FloatingIcon icon={Scale} className="top-1/2 left-1/3 animate-pulse" />
+      <FloatingIcon icon={Scale} className="top-[5%] left-[5%] animate-bounce" />
+      <FloatingIcon icon={BookOpen} className="top-[20%] right-[8%] animate-pulse" />
+      <FloatingIcon icon={Landmark} className="bottom-[15%] left-[10%] animate-pulse" />
+      <FloatingIcon icon={Shield} className="bottom-[5%] right-[5%] animate-bounce" />
+      <FloatingIcon icon={Gavel} className="top-[50%] left-[30%] animate-pulse" />
+      <FloatingIcon icon={Scale} className="top-[70%] right-[25%] animate-bounce" />
 
       {/* Left Decorative Panel (Desktop) */}
       <div className="hidden lg:flex lg:w-1/2 items-center justify-center bg-gradient-hero relative">
@@ -87,6 +88,7 @@ const Auth = () => {
           <div className="mt-10 flex justify-center gap-8 opacity-30">
             <BookOpen className="h-12 w-12" />
             <Landmark className="h-12 w-12" />
+            <Gavel className="h-12 w-12" />
             <Shield className="h-12 w-12" />
           </div>
         </div>
@@ -97,7 +99,7 @@ const Auth = () => {
         <Card className="w-full max-w-md shadow-xl animate-scale-in">
           <CardHeader className="text-center">
             <div className="lg:hidden mb-4">
-              <Scale className="h-12 w-12 mx-auto text-primary" />
+              <Scale className="h-12 w-12 mx-auto text-primary animate-bounce" />
               <h1 className="text-2xl font-heading font-bold text-primary mt-2">⚖️ LAWMATE</h1>
             </div>
             <CardTitle className="text-xl">Welcome to Lawmate</CardTitle>
@@ -114,7 +116,7 @@ const Auth = () => {
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input type="email" placeholder="Email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className="pl-10" required />
+                    <Input type="email" placeholder="Email (e.g. user@outlook.com)" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className="pl-10" required />
                   </div>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
@@ -135,7 +137,7 @@ const Auth = () => {
                   </div>
                   <div className="relative">
                     <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                    <Input type="email" placeholder="Email" value={signupEmail} onChange={e => setSignupEmail(e.target.value)} className="pl-10" required />
+                    <Input type="email" placeholder="Email (e.g. user@outlook.com)" value={signupEmail} onChange={e => setSignupEmail(e.target.value)} className="pl-10" required />
                   </div>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />

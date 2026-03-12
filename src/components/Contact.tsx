@@ -11,6 +11,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 
 const CONTACT_PASSWORD = 'lawmate_access';
+const AUTHORITY_EMAIL = 'awaisahmedmbnr@outlook.com';
+const AUTHORITY_PHONE = '8897166877';
 
 export const Contact = () => {
   const { t, i18n } = useTranslation();
@@ -81,7 +83,7 @@ export const Contact = () => {
       const body = encodeURIComponent(
         `Dear Sir/Madam,\n\nI am writing to report a legal issue regarding: ${topic}\n\n${complaint ? `Complaint Details:\n${complaint}\n\n` : ''}Contact Details:\nEmail: ${userEmail}\nPhone: ${userPhone}\n\nPlease take necessary action.\n\nRegards`
       );
-      window.open(`mailto:awaisahmedmbnr@gmail.com?subject=${subject}&body=${body}`, '_self');
+      window.open(`mailto:${AUTHORITY_EMAIL}?subject=${subject}&body=${body}`, '_self');
 
       localStorage.removeItem('lawmate_case_topic');
       setCaseTopic('');
@@ -141,7 +143,6 @@ export const Contact = () => {
                 </div>
               )}
 
-              {/* Complaint Entry */}
               <div>
                 <label className="text-sm font-medium mb-1 block">{t('contact.enterComplaint', 'Enter Your Complaint')}</label>
                 <Textarea
@@ -172,9 +173,9 @@ export const Contact = () => {
 
               <div className="border-t pt-4">
                 <Button className="w-full" size="lg" asChild>
-                  <a href="tel:+918897166877"><Phone className="mr-2 h-5 w-5" /> {t('contact.callHead', 'Call Head of the Area or Lawyer')}</a>
+                  <a href={`tel:+91${AUTHORITY_PHONE}`}><Phone className="mr-2 h-5 w-5" /> {t('contact.callHead', 'Call Head of the Area or Lawyer')}</a>
                 </Button>
-                <p className="text-center text-sm font-semibold mt-2">+91 8897166877</p>
+                <p className="text-center text-sm font-semibold mt-2">+91 {AUTHORITY_PHONE}</p>
               </div>
             </CardContent>
           </Card>
@@ -189,13 +190,13 @@ export const Contact = () => {
             </CardHeader>
             <CardContent className="p-6 space-y-4">
               <Button variant="outline" className="w-full" size="lg" asChild>
-                <a href="mailto:awaisahmedmbnr@gmail.com"><Mail className="mr-2 h-5 w-5" /> {t('contact.email')}</a>
+                <a href={`mailto:${AUTHORITY_EMAIL}`}><Mail className="mr-2 h-5 w-5" /> {t('contact.email')}</a>
               </Button>
               <Button variant="outline" className="w-full" size="lg" asChild>
-                <a href="tel:1800123456"><Phone className="mr-2 h-5 w-5" /> {t('contact.callSupport')}</a>
+                <a href={`tel:+91${AUTHORITY_PHONE}`}><Phone className="mr-2 h-5 w-5" /> {t('contact.callSupport')}</a>
               </Button>
               <Button variant="outline" className="w-full" size="lg" asChild>
-                <a href="https://wa.me/918897166877" target="_blank" rel="noopener noreferrer">
+                <a href={`https://wa.me/91${AUTHORITY_PHONE}`} target="_blank" rel="noopener noreferrer">
                   <MessageCircle className="mr-2 h-5 w-5" /> {t('contact.whatsapp')}
                 </a>
               </Button>

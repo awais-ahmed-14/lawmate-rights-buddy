@@ -1,138 +1,177 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
+import { Phone, Mail, MapPin, Send, Loader2, Users } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { useToast } from '@/hooks/use-toast';
 
-import 'leaflet/dist/leaflet.css';
+const AUTHORITY_EMAIL = 'awaisahmedmbnr@outlook.com';
 
-// Fix default marker icons
-delete (L.Icon.Default.prototype as any)._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
-});
-
-interface District {
-  name: string;
-  lat: number;
-  lng: number;
-  lawyerName?: string;
-  lawyerPhone: string;
-  lawyerEmail: string;
-}
-
-const defaultDistricts: District[] = [
-  { name: 'Hyderabad', lat: 17.385, lng: 78.4867, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Ranga Reddy', lat: 17.2543, lng: 78.2035, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Warangal', lat: 17.9784, lng: 79.5941, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Karimnagar', lat: 18.4386, lng: 79.1288, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Nizamabad', lat: 18.6725, lng: 78.094, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Khammam', lat: 17.2473, lng: 80.1514, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Nalgonda', lat: 17.0583, lng: 79.2671, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Mahabubnagar', lat: 16.7388, lng: 77.9855, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Medak', lat: 18.0529, lng: 78.2639, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
-  { name: 'Adilabad', lat: 19.664, lng: 78.532, lawyerPhone: '8897166877', lawyerEmail: 'awaisahmedmbnr@gmail.com' },
+const DISTRICTS = [
+  'Hyderabad', 'Ranga Reddy', 'Warangal', 'Karimnagar', 'Nizamabad',
+  'Khammam', 'Nalgonda', 'Mahabubnagar', 'Medak', 'Adilabad',
 ];
+
+interface ApprovedLawyer {
+  name: string;
+  email: string;
+  phone: string;
+  district: string;
+}
 
 export const DistrictMap = () => {
   const { t } = useTranslation();
-  const [districts, setDistricts] = useState<District[]>(defaultDistricts);
+  const { profile } = useAuth();
+  const { toast } = useToast();
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+  const [complaint, setComplaint] = useState('');
+  const [lawyers, setLawyers] = useState<ApprovedLawyer[]>([]);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     const fetchLawyers = async () => {
-      const { data } = await (supabase.from as any)('lawyers')
+      const { data } = await supabase
+        .from('lawyers')
         .select('name, email, phone, district')
         .eq('approved', true);
-      if (data && data.length > 0) {
-        setDistricts(prev =>
-          prev.map(d => {
-            const lawyer = data.find((l: any) => l.district === d.name);
-            return lawyer
-              ? { ...d, lawyerName: lawyer.name, lawyerPhone: lawyer.phone, lawyerEmail: lawyer.email }
-              : d;
-          })
-        );
-      }
+      if (data) setLawyers(data as ApprovedLawyer[]);
     };
     fetchLawyers();
   }, []);
 
+  const districtLawyers = lawyers.filter(l => l.district === selectedDistrict);
+
+  const handleSendToAuthority = () => {
+    if (!complaint.trim()) {
+      toast({ title: 'Please enter your complaint', variant: 'destructive' });
+      return;
+    }
+    const subject = encodeURIComponent(`District Complaint - ${selectedDistrict}`);
+    const body = encodeURIComponent(
+      `Dear Authority,\n\nDistrict: ${selectedDistrict}\n\nComplaint:\n${complaint}\n\nFrom:\nEmail: ${profile?.email || 'N/A'}\nPhone: ${profile?.phone || 'N/A'}\nName: ${profile?.full_name || 'N/A'}\n\nRegards`
+    );
+    window.open(`mailto:${AUTHORITY_EMAIL}?subject=${subject}&body=${body}`, '_self');
+  };
+
+  const handleContactLawyer = (lawyer: ApprovedLawyer) => {
+    if (!complaint.trim()) {
+      toast({ title: 'Please enter your complaint first', variant: 'destructive' });
+      return;
+    }
+    const subject = encodeURIComponent(`Legal Complaint - ${selectedDistrict}`);
+    const body = encodeURIComponent(
+      `Dear ${lawyer.name},\n\nDistrict: ${selectedDistrict}\n\nComplaint:\n${complaint}\n\nFrom:\nEmail: ${profile?.email || 'N/A'}\nPhone: ${profile?.phone || 'N/A'}\nName: ${profile?.full_name || 'N/A'}\n\nRegards`
+    );
+    window.open(`mailto:${lawyer.email}?subject=${subject}&body=${body}`, '_self');
+  };
+
   return (
     <section id="district-map" className="py-20 bg-background">
-      <div className="container max-w-6xl">
+      <div className="container max-w-4xl">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
             <MapPin className="inline h-8 w-8 text-primary mr-2" />
-            {t('districtMap.title', 'Telangana District Lawyer Map')}
+            {t('districtMap.title', 'Telangana District Legal Help')}
           </h2>
           <p className="text-xl text-muted-foreground">
-            {t('districtMap.subtitle', 'Find and contact lawyers assigned to your district')}
+            {t('districtMap.subtitle', 'Select your district to contact authority or assigned lawyer')}
           </p>
         </div>
 
-        <Card className="shadow-lg overflow-hidden">
-          <CardContent className="p-0">
-            <div className="h-[450px] w-full">
-              <MapContainer
-                center={[17.9, 78.9]}
-                zoom={7}
-                style={{ height: '100%', width: '100%' }}
-                scrollWheelZoom={false}
-              >
-                <TileLayer
-                  attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {districts.map(d => (
-                  <Marker key={d.name} position={[d.lat, d.lng]}>
-                    <Popup>
-                      <div className="text-sm min-w-[200px]">
-                        <h3 className="font-bold text-base mb-1">{d.name}</h3>
-                        {d.lawyerName && (
-                          <p className="text-xs text-gray-600 mb-2">Lawyer: <strong>{d.lawyerName}</strong></p>
-                        )}
-                        <div className="space-y-1">
-                          <a href={`tel:+91${d.lawyerPhone}`} className="flex items-center gap-1 text-blue-600 hover:underline">
-                            <Phone className="h-3 w-3" /> +91 {d.lawyerPhone}
-                          </a>
-                          <a href={`mailto:${d.lawyerEmail}`} className="flex items-center gap-1 text-blue-600 hover:underline">
-                            <Mail className="h-3 w-3" /> {d.lawyerEmail}
-                          </a>
-                        </div>
-                      </div>
-                    </Popup>
-                  </Marker>
+        <Card className="shadow-lg">
+          <CardHeader className="bg-gradient-hero text-primary-foreground rounded-t-lg">
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" /> Select Your District
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            {/* District Selection */}
+            <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Choose a Telangana district..." />
+              </SelectTrigger>
+              <SelectContent>
+                {DISTRICTS.map(d => (
+                  <SelectItem key={d} value={d}>{d}</SelectItem>
                 ))}
-              </MapContainer>
-            </div>
+              </SelectContent>
+            </Select>
+
+            {selectedDistrict && (
+              <>
+                {/* Complaint Field */}
+                <div>
+                  <label className="text-sm font-medium mb-1 block">Enter Your Complaint</label>
+                  <Textarea
+                    placeholder="Describe your complaint in detail..."
+                    value={complaint}
+                    onChange={e => setComplaint(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                </div>
+
+                {/* Contact Options */}
+                <div className="space-y-4">
+                  {/* Authority Contact */}
+                  <Card className="border-2 border-primary/20">
+                    <CardContent className="p-4">
+                      <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-primary" /> District Authority Contact
+                      </h4>
+                      <p className="text-xs text-muted-foreground mb-3">{AUTHORITY_EMAIL}</p>
+                      <Button
+                        className="w-full"
+                        onClick={handleSendToAuthority}
+                        disabled={!complaint.trim()}
+                      >
+                        <Send className="mr-2 h-4 w-4" /> Send Complaint to Authority
+                      </Button>
+                    </CardContent>
+                  </Card>
+
+                  {/* Approved Lawyers */}
+                  {districtLawyers.length > 0 && (
+                    <Card className="border-2 border-accent/20">
+                      <CardContent className="p-4">
+                        <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                          <Users className="h-4 w-4 text-accent-foreground" /> Approved Lawyers for {selectedDistrict}
+                        </h4>
+                        <div className="space-y-3">
+                          {districtLawyers.map((lawyer, i) => (
+                            <div key={i} className="p-3 bg-muted/50 rounded-lg flex items-center justify-between gap-3">
+                              <div>
+                                <p className="font-medium text-sm">{lawyer.name}</p>
+                                <p className="text-xs text-muted-foreground">{lawyer.email} · {lawyer.phone}</p>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button size="sm" variant="outline" onClick={() => handleContactLawyer(lawyer)} disabled={!complaint.trim()}>
+                                  <Mail className="h-3 w-3 mr-1" /> Mail
+                                </Button>
+                                <Button size="sm" variant="outline" asChild>
+                                  <a href={`tel:+91${lawyer.phone}`}><Phone className="h-3 w-3" /></a>
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
+                  {districtLawyers.length === 0 && (
+                    <p className="text-sm text-muted-foreground text-center py-2">
+                      No approved lawyers for {selectedDistrict} yet. Use the authority contact above.
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
           </CardContent>
         </Card>
-
-        {/* District Cards Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mt-8">
-          {districts.map(d => (
-            <Card key={d.name} className="hover-lift text-center">
-              <CardContent className="p-4">
-                <MapPin className="h-6 w-6 mx-auto mb-2 text-primary" />
-                <h3 className="font-semibold text-sm mb-1">{d.name}</h3>
-                {d.lawyerName && <p className="text-xs text-muted-foreground mb-2">{d.lawyerName}</p>}
-                <div className="flex gap-1 justify-center">
-                  <Button size="sm" variant="outline" className="h-7 px-2" asChild>
-                    <a href={`tel:+91${d.lawyerPhone}`}><Phone className="h-3 w-3" /></a>
-                  </Button>
-                  <Button size="sm" variant="outline" className="h-7 px-2" asChild>
-                    <a href={`mailto:${d.lawyerEmail}`}><Mail className="h-3 w-3" /></a>
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
       </div>
     </section>
   );

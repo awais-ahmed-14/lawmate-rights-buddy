@@ -108,7 +108,9 @@ export const Header = () => {
               <Shield className="h-3.5 w-3.5" /> {t('header.nav.admin', 'Admin Login')}
             </Link>
             <button onClick={() => scrollToSection('about')} className="text-sm font-medium text-left transition-colors hover:text-primary">{t('header.nav.about')}</button>
-            <button onClick={() => scrollToSection('contact')} className="text-sm font-medium text-left transition-colors hover:text-primary">{t('header.nav.contact')}</button>
+            <button onClick={() => scrollToSection('contact')} className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1">
+              <MapPin className="h-3.5 w-3.5" /> {t('header.nav.contact', 'Need Legal Help')}
+            </button>
             {user && (
               <button onClick={signOut} className="text-sm font-medium text-left text-destructive flex items-center gap-1">
                 <LogOut className="h-3.5 w-3.5" /> Logout

@@ -19,7 +19,7 @@ const Index = () => {
       <FundamentalRights />
       <Scenarios />
       <ScenarioInput />
-      <DistrictMap />
+      
       <DataAnalysis />
       <Contact />
       <About />

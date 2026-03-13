@@ -101,9 +101,6 @@ export const Header = () => {
             <button onClick={() => scrollToSection('scenario-input')} className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1">
               <Bot className="h-3.5 w-3.5" /> {t('header.nav.ai', 'AI Assistant')}
             </button>
-            <button onClick={() => scrollToSection('district-map')} className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1">
-              <MapPin className="h-3.5 w-3.5" /> {t('header.nav.map', 'District Map')}
-            </button>
             <button onClick={() => scrollToSection('data-analysis')} className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1">
               <BarChart3 className="h-3.5 w-3.5" /> {t('header.nav.analytics', 'Analytics')}
             </button>

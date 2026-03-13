@@ -2,28 +2,39 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Phone, Mail, MessageCircle, Loader2, Lock, ShieldCheck } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Mail, Loader2, MapPin, Send, Users, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 
-const CONTACT_PASSWORD = 'lawmate_access';
 const AUTHORITY_EMAIL = 'awaisahmedmbnr@outlook.com';
-const AUTHORITY_PHONE = '8897166877';
+
+const DISTRICTS = [
+  'Hyderabad', 'Ranga Reddy', 'Warangal', 'Karimnagar', 'Nizamabad',
+  'Khammam', 'Nalgonda', 'Mahabubnagar', 'Medak', 'Adilabad',
+];
+
+interface ApprovedLawyer {
+  name: string;
+  email: string;
+  phone: string;
+  district: string;
+}
 
 export const Contact = () => {
   const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { profile } = useAuth();
-  const [caseTopic, setCaseTopic] = useState('');
+
+  const [selectedDistrict, setSelectedDistrict] = useState('');
   const [complaint, setComplaint] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [contactUnlocked, setContactUnlocked] = useState(false);
-  const [contactPassword, setContactPassword] = useState('');
+  const [lawyers, setLawyers] = useState<ApprovedLawyer[]>([]);
+  const [caseTopic, setCaseTopic] = useState('');
 
   useEffect(() => {
     const topic = localStorage.getItem('lawmate_case_topic') || '';
@@ -35,16 +46,24 @@ export const Contact = () => {
     return () => clearInterval(interval);
   }, [caseTopic]);
 
-  const handleUnlock = () => {
-    if (contactPassword === CONTACT_PASSWORD) {
-      setContactUnlocked(true);
-      toast({ title: t('contact.unlocked', 'Access Granted ✅') });
-    } else {
-      toast({ title: t('contact.wrongPassword', 'Incorrect Password'), variant: 'destructive' });
-    }
-  };
+  useEffect(() => {
+    const fetchLawyers = async () => {
+      const { data } = await supabase
+        .from('lawyers')
+        .select('name, email, phone, district')
+        .eq('approved', true);
+      if (data) setLawyers(data as ApprovedLawyer[]);
+    };
+    fetchLawyers();
+  }, []);
 
-  const registerCaseAndSendMail = async () => {
+  const districtLawyers = lawyers.filter(l => l.district === selectedDistrict);
+
+  const registerCaseAndSendMail = async (targetEmail: string, targetName?: string) => {
+    if (!complaint.trim()) {
+      toast({ title: 'Please enter your complaint', variant: 'destructive' });
+      return;
+    }
     const topic = caseTopic || complaint.slice(0, 50) || 'Legal Complaint';
     setIsSending(true);
     try {
@@ -79,11 +98,12 @@ export const Contact = () => {
         description: t('contact.caseRegisteredDesc', 'Your case has been registered. Mail is opening now.'),
       });
 
-      const subject = encodeURIComponent(`Legal Complaint - ${topic}`);
+      const recipient = targetName || 'Sir/Madam';
+      const subject = encodeURIComponent(`Legal Complaint - ${selectedDistrict} - ${topic}`);
       const body = encodeURIComponent(
-        `Dear Sir/Madam,\n\nI am writing to report a legal issue regarding: ${topic}\n\n${complaint ? `Complaint Details:\n${complaint}\n\n` : ''}Contact Details:\nEmail: ${userEmail}\nPhone: ${userPhone}\n\nPlease take necessary action.\n\nRegards`
+        `Dear ${recipient},\n\nDistrict: ${selectedDistrict}\n\nI am writing to report a legal issue regarding: ${topic}\n\nComplaint Details:\n${complaint}\n\nContact Details:\nEmail: ${userEmail}\nPhone: ${userPhone}\nName: ${profile?.full_name || 'N/A'}\n\nPlease take necessary action.\n\nRegards`
       );
-      window.open(`mailto:${AUTHORITY_EMAIL}?subject=${subject}&body=${body}`, '_self');
+      window.open(`mailto:${targetEmail}?subject=${subject}&body=${body}`, '_self');
 
       localStorage.removeItem('lawmate_case_topic');
       setCaseTopic('');
@@ -96,113 +116,143 @@ export const Contact = () => {
     }
   };
 
-  if (!contactUnlocked) {
-    return (
-      <section id="contact" className="py-20 bg-muted/30">
-        <div className="container max-w-md">
-          <Card className="shadow-lg">
-            <CardHeader className="text-center">
-              <Lock className="h-10 w-10 mx-auto mb-2 text-primary" />
-              <CardTitle>{t('contact.title')}</CardTitle>
-              <CardDescription>{t('contact.passwordRequired', 'Enter the access password to contact the authority.')}</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Input type="password" placeholder={t('contact.enterPassword', 'Enter access password')} value={contactPassword} onChange={e => setContactPassword(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') handleUnlock(); }} />
-              <Button className="w-full" onClick={handleUnlock}>
-                <ShieldCheck className="mr-2 h-4 w-4" /> {t('contact.unlock', 'Verify & Access')}
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section id="contact" className="py-20 bg-muted/30">
       <div className="container max-w-4xl">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">{t('contact.title')}</h2>
-          <p className="text-xl text-muted-foreground">{t('contact.subtitle')}</p>
+          <h2 className="text-3xl md:text-4xl font-heading font-bold mb-4">
+            <MapPin className="inline h-8 w-8 text-primary mr-2" />
+            {t('contact.title', 'Need Legal Help?')}
+          </h2>
+          <p className="text-xl text-muted-foreground">
+            {t('contact.subtitle', 'Select your district, describe your issue, and send your complaint directly')}
+          </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="shadow-lg hover-lift">
-            <CardHeader className="bg-gradient-hero text-primary-foreground rounded-t-lg">
-              <CardTitle className="flex items-center gap-2">
-                <Phone className="h-5 w-5" />
-                {t('contact.headTitle', 'Contact Head of the Area or Lawyer')}
-              </CardTitle>
-              <CardDescription className="text-primary-foreground/80">{t('contact.headDescription')}</CardDescription>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              {caseTopic && (
-                <div className="bg-primary/10 border border-primary/20 rounded-lg p-3">
-                  <p className="text-xs text-muted-foreground mb-1">{t('contact.detectedTopic', 'Detected Case Topic:')}</p>
-                  <p className="font-semibold text-primary text-sm">{caseTopic}</p>
+        <Card className="shadow-lg">
+          <CardHeader className="bg-gradient-hero text-primary-foreground rounded-t-lg">
+            <CardTitle className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              {t('contact.selectDistrict', 'Select Your District & File Complaint')}
+            </CardTitle>
+            <CardDescription className="text-primary-foreground/80">
+              {t('contact.flowDesc', 'Choose district → Write complaint → Send to assigned lawyer or authority')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6 space-y-6">
+            {/* Step 1: District Selection */}
+            <div>
+              <label className="text-sm font-medium mb-2 block">Step 1: Select District</label>
+              <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose a Telangana district..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {DISTRICTS.map(d => (
+                    <SelectItem key={d} value={d}>{d}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {selectedDistrict && (
+              <>
+                {/* Step 2: Complaint */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Step 2: Describe Your Complaint</label>
+                  {caseTopic && (
+                    <div className="bg-primary/10 border border-primary/20 rounded-lg p-3 mb-3">
+                      <p className="text-xs text-muted-foreground mb-1">Detected Case Topic:</p>
+                      <p className="font-semibold text-primary text-sm">{caseTopic}</p>
+                    </div>
+                  )}
+                  <Textarea
+                    placeholder={t('contact.complaintPlaceholder', 'Describe your complaint in detail...')}
+                    value={complaint}
+                    onChange={e => setComplaint(e.target.value)}
+                    className="min-h-[120px]"
+                  />
                 </div>
-              )}
 
-              <div>
-                <label className="text-sm font-medium mb-1 block">{t('contact.enterComplaint', 'Enter Your Complaint')}</label>
-                <Textarea
-                  placeholder={t('contact.complaintPlaceholder', 'Describe your complaint in detail...')}
-                  value={complaint}
-                  onChange={e => setComplaint(e.target.value)}
-                  className="min-h-[100px]"
-                />
-              </div>
+                {profile && (
+                  <div className="bg-muted/50 p-3 rounded-lg text-xs space-y-1">
+                    <p><strong>Your Email:</strong> {profile.email}</p>
+                    <p><strong>Your Phone:</strong> {profile.phone || 'Not provided'}</p>
+                  </div>
+                )}
 
-              {profile && (
-                <div className="bg-muted/50 p-3 rounded-lg text-xs space-y-1">
-                  <p><strong>Your Email:</strong> {profile.email}</p>
-                  <p><strong>Your Phone:</strong> {profile.phone || 'Not provided'}</p>
+                {/* Step 3: Send */}
+                <div>
+                  <label className="text-sm font-medium mb-3 block">Step 3: Send Complaint</label>
+                  <div className="space-y-4">
+                    {/* Authority Contact */}
+                    <Card className="border-2 border-primary/20">
+                      <CardContent className="p-4">
+                        <h4 className="font-semibold text-sm mb-2 flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-primary" /> District Authority
+                        </h4>
+                        <p className="text-xs text-muted-foreground mb-3">{AUTHORITY_EMAIL}</p>
+                        <Button
+                          className="w-full"
+                          onClick={() => registerCaseAndSendMail(AUTHORITY_EMAIL)}
+                          disabled={isSending || !complaint.trim()}
+                        >
+                          {isSending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                          Send to District Authority
+                        </Button>
+                      </CardContent>
+                    </Card>
+
+                    {/* Approved Lawyers */}
+                    {districtLawyers.length > 0 && (
+                      <Card className="border-2 border-accent/20">
+                        <CardContent className="p-4">
+                          <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+                            <Users className="h-4 w-4 text-accent-foreground" /> Approved Lawyers for {selectedDistrict}
+                          </h4>
+                          <div className="space-y-3">
+                            {districtLawyers.map((lawyer, i) => (
+                              <div key={i} className="p-3 bg-muted/50 rounded-lg flex items-center justify-between gap-3 flex-wrap">
+                                <div>
+                                  <p className="font-medium text-sm">{lawyer.name}</p>
+                                  <p className="text-xs text-muted-foreground">{lawyer.email} · {lawyer.phone}</p>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Button
+                                    size="sm"
+                                    onClick={() => registerCaseAndSendMail(lawyer.email, lawyer.name)}
+                                    disabled={isSending || !complaint.trim()}
+                                  >
+                                    <Mail className="h-3 w-3 mr-1" /> Send Mail
+                                  </Button>
+                                  <Button size="sm" variant="outline" asChild>
+                                    <a href={`tel:+91${lawyer.phone}`}><Phone className="h-3 w-3" /></a>
+                                  </Button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
+
+                    {districtLawyers.length === 0 && (
+                      <p className="text-sm text-muted-foreground text-center py-2">
+                        No approved lawyers for {selectedDistrict} yet. Send your complaint to the district authority above.
+                      </p>
+                    )}
+                  </div>
                 </div>
-              )}
 
-              <Button className="w-full" size="lg" onClick={registerCaseAndSendMail} disabled={isSending || !complaint.trim()}>
-                {isSending ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Mail className="mr-2 h-5 w-5" />}
-                {t('contact.sendMail', 'Register Case & Send Mail')}
-              </Button>
-
-              {!caseTopic && !complaint && (
-                <p className="text-xs text-muted-foreground text-center">
-                  {t('contact.noTopicHint', 'Tip: Ask the AI assistant about your issue first — the case topic will auto-fill here.')}
-                </p>
-              )}
-
-              <div className="border-t pt-4">
-                <Button className="w-full" size="lg" asChild>
-                  <a href={`tel:+91${AUTHORITY_PHONE}`}><Phone className="mr-2 h-5 w-5" /> {t('contact.callHead', 'Call Head of the Area or Lawyer')}</a>
-                </Button>
-                <p className="text-center text-sm font-semibold mt-2">+91 {AUTHORITY_PHONE}</p>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="shadow-lg hover-lift">
-            <CardHeader className="bg-gradient-hero text-primary-foreground rounded-t-lg">
-              <CardTitle className="flex items-center gap-2">
-                <MessageCircle className="h-5 w-5" />
-                {t('contact.otherTitle', 'Other Contact Options')}
-              </CardTitle>
-              <CardDescription className="text-primary-foreground/80">{t('contact.otherDescription', 'Additional ways to reach us')}</CardDescription>
-            </CardHeader>
-            <CardContent className="p-6 space-y-4">
-              <Button variant="outline" className="w-full" size="lg" asChild>
-                <a href={`mailto:${AUTHORITY_EMAIL}`}><Mail className="mr-2 h-5 w-5" /> {t('contact.email')}</a>
-              </Button>
-              <Button variant="outline" className="w-full" size="lg" asChild>
-                <a href={`tel:+91${AUTHORITY_PHONE}`}><Phone className="mr-2 h-5 w-5" /> {t('contact.callSupport')}</a>
-              </Button>
-              <Button variant="outline" className="w-full" size="lg" asChild>
-                <a href={`https://wa.me/91${AUTHORITY_PHONE}`} target="_blank" rel="noopener noreferrer">
-                  <MessageCircle className="mr-2 h-5 w-5" /> {t('contact.whatsapp')}
-                </a>
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+                {!complaint.trim() && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    Tip: Ask the AI assistant about your issue first — the case topic will auto-fill here.
+                  </p>
+                )}
+              </>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </section>
   );

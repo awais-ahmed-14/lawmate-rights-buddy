@@ -5,7 +5,7 @@ import { Scenarios } from '@/components/Scenarios';
 import { ScenarioInput } from '@/components/ScenarioInput';
 import { FundamentalRights } from '@/components/FundamentalRights';
 import { DataAnalysis } from '@/components/DataAnalysis';
-import { DistrictMap } from '@/components/DistrictMap';
+
 import { About } from '@/components/About';
 import { Contact } from '@/components/Contact';
 import { Footer } from '@/components/Footer';

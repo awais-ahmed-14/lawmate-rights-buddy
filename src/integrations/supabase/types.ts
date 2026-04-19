@@ -17,6 +17,7 @@ export type Database = {
       case_records: {
         Row: {
           admin_reply: string | null
+          assigned_lawyer_id: string | null
           case_type_id: string
           created_at: string
           id: string
@@ -29,6 +30,7 @@ export type Database = {
         }
         Insert: {
           admin_reply?: string | null
+          assigned_lawyer_id?: string | null
           case_type_id: string
           created_at?: string
           id?: string
@@ -41,6 +43,7 @@ export type Database = {
         }
         Update: {
           admin_reply?: string | null
+          assigned_lawyer_id?: string | null
           case_type_id?: string
           created_at?: string
           id?: string
@@ -52,6 +55,13 @@ export type Database = {
           user_phone?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "case_records_assigned_lawyer_id_fkey"
+            columns: ["assigned_lawyer_id"]
+            isOneToOne: false
+            referencedRelation: "lawyers"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "case_records_case_type_id_fkey"
             columns: ["case_type_id"]

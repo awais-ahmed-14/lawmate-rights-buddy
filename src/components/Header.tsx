@@ -57,7 +57,7 @@ export const Header = () => {
 
         <div className="flex items-center gap-2">
           <Button variant="outline" size="sm" asChild className="gap-1.5 hidden sm:flex">
-            <Link to="/admin"><Shield className="h-4 w-4" /> <span className="hidden lg:inline">{t('header.nav.admin', 'Admin')}</span></Link>
+            <Link to="/auth"><Shield className="h-4 w-4" /> <span className="hidden lg:inline">Logins</span></Link>
           </Button>
           <Button variant="outline" size="sm" onClick={() => scrollToSection('data-analysis')} className="gap-1.5 hidden sm:flex">
             <BarChart3 className="h-4 w-4" /> <span className="hidden lg:inline">{t('header.nav.analytics', 'Analytics')}</span>
@@ -104,8 +104,8 @@ export const Header = () => {
             <button onClick={() => scrollToSection('data-analysis')} className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1">
               <BarChart3 className="h-3.5 w-3.5" /> {t('header.nav.analytics', 'Analytics')}
             </button>
-            <Link to="/admin" className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1" onClick={() => setMobileMenuOpen(false)}>
-              <Shield className="h-3.5 w-3.5" /> {t('header.nav.admin', 'Admin Login')}
+            <Link to="/auth" className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1" onClick={() => setMobileMenuOpen(false)}>
+              <Shield className="h-3.5 w-3.5" /> Lawyer / Admin Logins
             </Link>
             <button onClick={() => scrollToSection('about')} className="text-sm font-medium text-left transition-colors hover:text-primary">{t('header.nav.about')}</button>
             <button onClick={() => scrollToSection('contact')} className="text-sm font-medium text-left transition-colors hover:text-primary flex items-center gap-1">

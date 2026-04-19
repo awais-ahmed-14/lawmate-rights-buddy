@@ -3,8 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ArrowLeft, Scale, Bird, Shield, Church, BookOpen, Gavel } from 'lucide-react';
-import { Header } from '@/components/Header';
-import { Footer } from '@/components/Footer';
+import { AboutFooter } from '@/components/AboutFooter';
 
 const rightIcons = {
   equality: Scale,
@@ -39,8 +38,7 @@ export default function RightDetail() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-1 py-20 bg-muted/30">
+      <main className="flex-1 py-12 bg-muted/30">
         <div className="container max-w-4xl">
           <Button
             variant="ghost"
@@ -98,7 +96,7 @@ export default function RightDetail() {
           </Card>
         </div>
       </main>
-      <Footer />
+      <AboutFooter />
     </div>
   );
 }

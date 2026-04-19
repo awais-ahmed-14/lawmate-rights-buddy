@@ -19,7 +19,43 @@ serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    // Login
+    // Simple login (email + single password)
+    if (action === "login-simple") {
+      const { email, password } = body;
+      const { data, error } = await supabase
+        .from("lawyers")
+        .select("id, name, email, phone, district, approved, password1")
+        .eq("email", email)
+        .maybeSingle();
+
+      if (error || !data) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Invalid credentials" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (data.password1 !== password) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Invalid password" }),
+          { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      if (!data.approved) {
+        return new Response(
+          JSON.stringify({ success: false, error: "Your registration is pending approval by the super admin" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+      return new Response(
+        JSON.stringify({
+          success: true,
+          lawyer: { id: data.id, name: data.name, email: data.email, phone: data.phone, district: data.district },
+        }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Login (legacy dual-password)
     if (action === "login") {
       const { email, phone, password1, password2 } = body;
       const { data, error } = await supabase

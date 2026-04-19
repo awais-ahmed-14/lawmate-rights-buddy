@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import RightDetail from "./pages/RightDetail";
 import AdminPanel from "./pages/AdminPanel";
 import Auth from "./pages/Auth";
+import LawyerDashboard from "./pages/LawyerDashboard";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/" element={<ProtectedRoute><Index /></ProtectedRoute>} />
           <Route path="/right/:rightKey" element={<ProtectedRoute><RightDetail /></ProtectedRoute>} />
           <Route path="/admin" element={<AdminPanel />} />
+          <Route path="/lawyer-dashboard" element={<LawyerDashboard />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

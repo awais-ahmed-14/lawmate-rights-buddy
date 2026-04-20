@@ -102,7 +102,40 @@ const LawyerDashboard = () => {
 
   const getCaseTypeName = (id: string) => caseTypes?.find(ct => ct.id === id)?.display_name || 'General';
 
-  if (!lawyer) return null;
+  if (!lawyer) {
+    return (
+      <div className="min-h-screen flex flex-col bg-muted/30">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md shadow-xl">
+            <CardHeader className="text-center">
+              <Gavel className="h-10 w-10 mx-auto text-primary mb-2" />
+              <CardTitle>Lawyer Login</CardTitle>
+              <CardDescription>Sign in to view assigned complaints</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleLawyerLogin} className="space-y-4">
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input type="email" placeholder="Registered Email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className="pl-10" required />
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input type="password" placeholder="Password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} className="pl-10" required />
+                </div>
+                <Button type="submit" className="w-full" disabled={loggingIn}>
+                  {loggingIn ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Gavel className="mr-2 h-4 w-4" />} Login
+                </Button>
+                <p className="text-xs text-muted-foreground text-center">
+                  Lawyer accounts are created by the Super Admin after verification.
+                </p>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+        <AboutFooter />
+      </div>
+    );
+  }
 
   const all = cases || [];
   const pending = all.filter(c => c.status === 'pending');

@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import {
-  CheckCircle, XCircle, Clock, ArrowLeft, Loader2, Mail, LogOut, Gavel,
+  CheckCircle, XCircle, Clock, ArrowLeft, Loader2, Mail, LogOut, Gavel, Lock,
 } from 'lucide-react';
 import { AboutFooter } from '@/components/AboutFooter';
 
@@ -20,19 +21,45 @@ const LawyerDashboard = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [lawyer, setLawyer] = useState<LawyerSession | null>(null);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loggingIn, setLoggingIn] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem('lawyer_session');
-    if (!raw) { navigate('/auth', { replace: true }); return; }
-    try { setLawyer(JSON.parse(raw)); } catch { navigate('/auth', { replace: true }); }
-  }, [navigate]);
+    if (raw) {
+      try { setLawyer(JSON.parse(raw)); } catch { /* show login */ }
+    }
+  }, []);
+
+  const handleLawyerLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail || !loginPassword) {
+      toast({ title: 'Email and password required', variant: 'destructive' }); return;
+    }
+    setLoggingIn(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lawyer-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+        body: JSON.stringify({ action: 'login-simple', email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      sessionStorage.setItem('lawyer_session', JSON.stringify(data.lawyer));
+      setLawyer(data.lawyer);
+      toast({ title: `Welcome, ${data.lawyer.name} ✅` });
+    } catch (err: any) {
+      toast({ title: 'Login Failed', description: err.message, variant: 'destructive' });
+    } finally { setLoggingIn(false); }
+  };
 
   const { data: cases, isLoading } = useQuery({
     queryKey: ['lawyer-cases', lawyer?.id],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('case_records')
-        .select('id, status, language, created_at, resolved_at, case_type_id, user_message, user_email, assigned_lawyer_id')
+        .select('id, status, language, created_at, resolved_at, case_type_id, user_message, user_email, user_phone, assigned_lawyer_id')
         .eq('assigned_lawyer_id', lawyer!.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -75,7 +102,40 @@ const LawyerDashboard = () => {
 
   const getCaseTypeName = (id: string) => caseTypes?.find(ct => ct.id === id)?.display_name || 'General';
 
-  if (!lawyer) return null;
+  if (!lawyer) {
+    return (
+      <div className="min-h-screen flex flex-col bg-muted/30">
+        <div className="flex-1 flex items-center justify-center p-4">
+          <Card className="w-full max-w-md shadow-xl">
+            <CardHeader className="text-center">
+              <Gavel className="h-10 w-10 mx-auto text-primary mb-2" />
+              <CardTitle>Lawyer Login</CardTitle>
+              <CardDescription>Sign in to view assigned complaints</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleLawyerLogin} className="space-y-4">
+                <div className="relative">
+                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input type="email" placeholder="Registered Email" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className="pl-10" required />
+                </div>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input type="password" placeholder="Password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} className="pl-10" required />
+                </div>
+                <Button type="submit" className="w-full" disabled={loggingIn}>
+                  {loggingIn ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Gavel className="mr-2 h-4 w-4" />} Login
+                </Button>
+                <p className="text-xs text-muted-foreground text-center">
+                  Lawyer accounts are created by the Super Admin after verification.
+                </p>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+        <AboutFooter />
+      </div>
+    );
+  }
 
   const all = cases || [];
   const pending = all.filter(c => c.status === 'pending');
@@ -93,9 +153,12 @@ const LawyerDashboard = () => {
               {badgeLabel && <Badge variant={badgeVariant}>{badgeLabel}</Badge>}
               <Badge variant="outline" className="text-xs">{c.language?.toUpperCase()}</Badge>
               <span className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</span>
-              {c.user_email && <span className="text-xs text-muted-foreground flex items-center gap-1"><Mail className="h-3 w-3" /> {c.user_email}</span>}
             </div>
           </div>
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          {c.user_email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {c.user_email}</span>}
+          {c.user_phone && <span className="flex items-center gap-1">📞 {c.user_phone}</span>}
         </div>
         {c.user_message && (
           <div className="bg-muted/50 p-3 rounded-md">

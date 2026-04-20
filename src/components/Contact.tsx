@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, MapPin, Send, Users, Gavel } from 'lucide-react';
+import { Loader2, MapPin, Send, Users, Gavel, Mail, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -32,6 +33,8 @@ export const Contact = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedLawyerId, setSelectedLawyerId] = useState<string>('');
   const [complaint, setComplaint] = useState('');
+  const [userPhone, setUserPhone] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [lawyers, setLawyers] = useState<ApprovedLawyer[]>([]);
   const [caseTopic, setCaseTopic] = useState('');
@@ -39,6 +42,13 @@ export const Contact = () => {
   useEffect(() => {
     setCaseTopic(localStorage.getItem('lawmate_case_topic') || '');
   }, []);
+
+  useEffect(() => {
+    if (profile) {
+      setUserEmail(profile.email || '');
+      setUserPhone((profile as any).phone || '');
+    }
+  }, [profile]);
 
   useEffect(() => {
     const fetchLawyers = async () => {
@@ -68,6 +78,12 @@ export const Contact = () => {
     if (!complaint.trim()) {
       toast({ title: 'Please describe your complaint', variant: 'destructive' }); return;
     }
+    if (!userPhone.trim() || !/^\+?[\d\s-]{7,15}$/.test(userPhone.trim())) {
+      toast({ title: 'Valid phone number required', variant: 'destructive' }); return;
+    }
+    if (!userEmail.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(userEmail.trim())) {
+      toast({ title: 'Valid email required', variant: 'destructive' }); return;
+    }
     const topic = caseTopic || complaint.slice(0, 50) || 'Legal Complaint';
     setIsSending(true);
     try {
@@ -83,8 +99,6 @@ export const Contact = () => {
         if (insertErr) throw insertErr;
         caseTypeId = newType!.id;
       }
-
-      const userEmail = profile?.email || '';
 
       // Dedup guard: prevent same user + case_type within last 24h
       const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
@@ -111,9 +125,18 @@ export const Contact = () => {
         language: i18n.language || 'en',
         user_message: complaint,
         user_email: userEmail,
+        user_phone: userPhone,
         assigned_lawyer_id: selectedLawyerId,
       });
-      if (insertCaseErr) throw insertCaseErr;
+      if (insertCaseErr) {
+        // Catch unique-index violation as duplicate
+        if ((insertCaseErr as any).code === '23505') {
+          toast({ title: 'Duplicate complaint', description: 'You already filed this type of complaint today.' });
+          setIsSending(false);
+          return;
+        }
+        throw insertCaseErr;
+      }
 
       queryClient.invalidateQueries({ queryKey: ['case-analytics'] });
       queryClient.invalidateQueries({ queryKey: ['lawyer-cases'] });
@@ -219,10 +242,33 @@ export const Contact = () => {
                 </div>
               )}
 
-              {profile && districtLawyers.length > 0 && (
-                <div className="bg-muted/50 p-3 rounded-lg text-xs space-y-1">
-                  <p><strong>From:</strong> {profile.full_name || profile.email}</p>
-                  <p><strong>Email:</strong> {profile.email}</p>
+              {/* Step 4: Contact details */}
+              {districtLawyers.length > 0 && (
+                <div className="grid sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-sm font-medium mb-1 block flex items-center gap-1.5">
+                      <Phone className="h-3.5 w-3.5" /> Phone Number
+                    </label>
+                    <Input
+                      type="tel"
+                      placeholder="e.g. +91 98765 43210"
+                      value={userPhone}
+                      onChange={e => setUserPhone(e.target.value)}
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-1 block flex items-center gap-1.5">
+                      <Mail className="h-3.5 w-3.5" /> Email
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      value={userEmail}
+                      onChange={e => setUserEmail(e.target.value)}
+                      required
+                    />
+                  </div>
                 </div>
               )}
 
@@ -231,7 +277,7 @@ export const Contact = () => {
                   className="w-full"
                   size="lg"
                   onClick={submitComplaint}
-                  disabled={isSending || !complaint.trim() || !selectedLawyerId}
+                  disabled={isSending || !complaint.trim() || !selectedLawyerId || !userPhone.trim() || !userEmail.trim()}
                 >
                   {isSending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
                   Send Complaint to Lawyer

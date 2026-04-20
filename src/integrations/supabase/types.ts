@@ -20,6 +20,7 @@ export type Database = {
           assigned_lawyer_id: string | null
           case_type_id: string
           created_at: string
+          created_day: string | null
           id: string
           language: string | null
           resolved_at: string | null
@@ -33,6 +34,7 @@ export type Database = {
           assigned_lawyer_id?: string | null
           case_type_id: string
           created_at?: string
+          created_day?: string | null
           id?: string
           language?: string | null
           resolved_at?: string | null
@@ -46,6 +48,7 @@ export type Database = {
           assigned_lawyer_id?: string | null
           case_type_id?: string
           created_at?: string
+          created_day?: string | null
           id?: string
           language?: string | null
           resolved_at?: string | null

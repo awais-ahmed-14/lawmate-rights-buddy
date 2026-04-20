@@ -32,7 +32,7 @@ const LawyerDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('case_records')
-        .select('id, status, language, created_at, resolved_at, case_type_id, user_message, user_email, assigned_lawyer_id')
+        .select('id, status, language, created_at, resolved_at, case_type_id, user_message, user_email, user_phone, assigned_lawyer_id')
         .eq('assigned_lawyer_id', lawyer!.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -93,9 +93,12 @@ const LawyerDashboard = () => {
               {badgeLabel && <Badge variant={badgeVariant}>{badgeLabel}</Badge>}
               <Badge variant="outline" className="text-xs">{c.language?.toUpperCase()}</Badge>
               <span className="text-xs text-muted-foreground">{new Date(c.created_at).toLocaleDateString()}</span>
-              {c.user_email && <span className="text-xs text-muted-foreground flex items-center gap-1"><Mail className="h-3 w-3" /> {c.user_email}</span>}
             </div>
           </div>
+        </div>
+        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+          {c.user_email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" /> {c.user_email}</span>}
+          {c.user_phone && <span className="flex items-center gap-1">📞 {c.user_phone}</span>}
         </div>
         {c.user_message && (
           <div className="bg-muted/50 p-3 rounded-md">

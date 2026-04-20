@@ -3,8 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Loader2, MapPin, Send, Users, Gavel } from 'lucide-react';
+import { Loader2, MapPin, Send, Users, Gavel, Mail, Phone } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
@@ -32,6 +33,8 @@ export const Contact = () => {
   const [selectedDistrict, setSelectedDistrict] = useState('');
   const [selectedLawyerId, setSelectedLawyerId] = useState<string>('');
   const [complaint, setComplaint] = useState('');
+  const [userPhone, setUserPhone] = useState('');
+  const [userEmail, setUserEmail] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [lawyers, setLawyers] = useState<ApprovedLawyer[]>([]);
   const [caseTopic, setCaseTopic] = useState('');
@@ -39,6 +42,13 @@ export const Contact = () => {
   useEffect(() => {
     setCaseTopic(localStorage.getItem('lawmate_case_topic') || '');
   }, []);
+
+  useEffect(() => {
+    if (profile) {
+      setUserEmail(profile.email || '');
+      setUserPhone((profile as any).phone || '');
+    }
+  }, [profile]);
 
   useEffect(() => {
     const fetchLawyers = async () => {
@@ -67,6 +77,12 @@ export const Contact = () => {
     }
     if (!complaint.trim()) {
       toast({ title: 'Please describe your complaint', variant: 'destructive' }); return;
+    }
+    if (!userPhone.trim() || !/^\+?[\d\s-]{7,15}$/.test(userPhone.trim())) {
+      toast({ title: 'Valid phone number required', variant: 'destructive' }); return;
+    }
+    if (!userEmail.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(userEmail.trim())) {
+      toast({ title: 'Valid email required', variant: 'destructive' }); return;
     }
     const topic = caseTopic || complaint.slice(0, 50) || 'Legal Complaint';
     setIsSending(true);

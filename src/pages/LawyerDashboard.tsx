@@ -2,12 +2,13 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import {
-  CheckCircle, XCircle, Clock, ArrowLeft, Loader2, Mail, LogOut, Gavel,
+  CheckCircle, XCircle, Clock, ArrowLeft, Loader2, Mail, LogOut, Gavel, Lock,
 } from 'lucide-react';
 import { AboutFooter } from '@/components/AboutFooter';
 
@@ -20,12 +21,38 @@ const LawyerDashboard = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [lawyer, setLawyer] = useState<LawyerSession | null>(null);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loggingIn, setLoggingIn] = useState(false);
 
   useEffect(() => {
     const raw = sessionStorage.getItem('lawyer_session');
-    if (!raw) { navigate('/auth', { replace: true }); return; }
-    try { setLawyer(JSON.parse(raw)); } catch { navigate('/auth', { replace: true }); }
-  }, [navigate]);
+    if (raw) {
+      try { setLawyer(JSON.parse(raw)); } catch { /* show login */ }
+    }
+  }, []);
+
+  const handleLawyerLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail || !loginPassword) {
+      toast({ title: 'Email and password required', variant: 'destructive' }); return;
+    }
+    setLoggingIn(true);
+    try {
+      const res = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/lawyer-auth`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY },
+        body: JSON.stringify({ action: 'login-simple', email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Login failed');
+      sessionStorage.setItem('lawyer_session', JSON.stringify(data.lawyer));
+      setLawyer(data.lawyer);
+      toast({ title: `Welcome, ${data.lawyer.name} ✅` });
+    } catch (err: any) {
+      toast({ title: 'Login Failed', description: err.message, variant: 'destructive' });
+    } finally { setLoggingIn(false); }
+  };
 
   const { data: cases, isLoading } = useQuery({
     queryKey: ['lawyer-cases', lawyer?.id],

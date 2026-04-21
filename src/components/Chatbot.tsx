@@ -43,13 +43,33 @@ export const Chatbot = () => {
     };
   }, []);
 
+  const cleanForSpeech = (text: string): string => {
+    return text
+      // Strip emojis & pictographs
+      .replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2300}-\u{23FF}\u{2B00}-\u{2BFF}]/gu, '')
+      // Strip markdown bold/italic/code/headers
+      .replace(/[*_`#~]+/g, '')
+      // Strip brackets
+      .replace(/[\[\]\(\)\{\}<>]/g, ' ')
+      // Strip slashes, pipes, backslashes
+      .replace(/[\/\\|]/g, ' ')
+      // Strip leading bullets/dashes on lines
+      .replace(/^[\s\-•·▪►▶]+/gm, '')
+      // Collapse whitespace
+      .replace(/\s+/g, ' ')
+      .trim();
+  };
+
   const speakText = (text: string) => {
     if (!synthRef.current) return;
 
     // Cancel any ongoing speech
     synthRef.current.cancel();
 
-    const utterance = new SpeechSynthesisUtterance(text);
+    const cleaned = cleanForSpeech(text);
+    if (!cleaned) return;
+
+    const utterance = new SpeechSynthesisUtterance(cleaned);
     
     // Set language based on i18n
     const langMap: { [key: string]: string } = {

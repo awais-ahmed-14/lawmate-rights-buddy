@@ -59,7 +59,7 @@ const LawyerDashboard = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('case_records')
-        .select('id, status, language, created_at, resolved_at, case_type_id, user_message, user_email, user_phone, assigned_lawyer_id')
+        .select('id, status, language, created_at, resolved_at, case_type_id, user_message, user_email, user_phone, assigned_lawyer_id, proof_files')
         .eq('assigned_lawyer_id', lawyer!.id)
         .order('created_at', { ascending: false });
       if (error) throw error;
@@ -164,6 +164,26 @@ const LawyerDashboard = () => {
           <div className="bg-muted/50 p-3 rounded-md">
             <p className="text-xs font-medium text-muted-foreground mb-1">User's Complaint:</p>
             <p className="text-sm whitespace-pre-wrap">{c.user_message}</p>
+          </div>
+        )}
+        {Array.isArray(c.proof_files) && c.proof_files.length > 0 && (
+          <div className="space-y-2">
+            <p className="text-xs font-medium text-muted-foreground">Uploaded Proof ({c.proof_files.length}):</p>
+            <div className="flex flex-wrap gap-2">
+              {c.proof_files.map((url: string, i: number) => {
+                const isImage = /\.(jpg|jpeg|png|gif|webp)(\?|$)/i.test(url);
+                return isImage ? (
+                  <a key={i} href={url} target="_blank" rel="noreferrer" className="block">
+                    <img src={url} alt={`Proof ${i + 1}`} className="h-20 w-20 object-cover rounded border" />
+                  </a>
+                ) : (
+                  <a key={i} href={url} target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs px-2.5 py-1.5 bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20">
+                    <Mail className="h-3 w-3" /> File {i + 1}
+                  </a>
+                );
+              })}
+            </div>
           </div>
         )}
         {showActions && (

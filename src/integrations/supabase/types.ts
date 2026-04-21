@@ -23,6 +23,7 @@ export type Database = {
           created_day: string | null
           id: string
           language: string | null
+          proof_files: string[] | null
           resolved_at: string | null
           status: string
           user_email: string | null
@@ -37,6 +38,7 @@ export type Database = {
           created_day?: string | null
           id?: string
           language?: string | null
+          proof_files?: string[] | null
           resolved_at?: string | null
           status?: string
           user_email?: string | null
@@ -51,6 +53,7 @@ export type Database = {
           created_day?: string | null
           id?: string
           language?: string | null
+          proof_files?: string[] | null
           resolved_at?: string | null
           status?: string
           user_email?: string | null

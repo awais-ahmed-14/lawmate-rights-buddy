@@ -26,16 +26,14 @@ interface CaseTypeRow {
 const OTHERS_KEY = 'others';
 
 // Translate a case type's canonical `name` via i18n; fall back to display_name.
-const translateCaseType = (ct: CaseTypeRow, t: (k: string, d?: string) => string) => {
+const translateCaseType = (ct: CaseTypeRow, t: any) => {
   if (!ct) return '';
   if (ct.name?.startsWith('others_')) {
     const prefix = t('caseTypes.others_prefix', 'Others');
     const tail = ct.display_name?.replace(/^Others:\s*/i, '') || '';
     return `${prefix}: ${tail}`;
   }
-  const key = `caseTypes.${ct.name}`;
-  const translated = t(key, ct.display_name);
-  return translated;
+  return t(`caseTypes.${ct.name}`, ct.display_name);
 };
 
 export const Contact = () => {

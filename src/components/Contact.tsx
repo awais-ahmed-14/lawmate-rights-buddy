@@ -25,8 +25,19 @@ interface CaseTypeRow {
 
 const OTHERS_KEY = 'others';
 
+// Translate a case type's canonical `name` via i18n; fall back to display_name.
+const translateCaseType = (ct: CaseTypeRow, t: any) => {
+  if (!ct) return '';
+  if (ct.name?.startsWith('others_')) {
+    const prefix = t('caseTypes.others_prefix', 'Others');
+    const tail = ct.display_name?.replace(/^Others:\s*/i, '') || '';
+    return `${prefix}: ${tail}`;
+  }
+  return t(`caseTypes.${ct.name}`, ct.display_name);
+};
+
 export const Contact = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const { profile } = useAuth();
@@ -73,9 +84,9 @@ export const Contact = () => {
 
   const handleFilesAdd = (e: React.ChangeEvent<HTMLInputElement>) => {
     const incoming = Array.from(e.target.files || []);
-    const valid = incoming.filter(f => f.size <= 25 * 1024 * 1024); // 25MB
+    const valid = incoming.filter(f => f.size <= 25 * 1024 * 1024);
     if (valid.length < incoming.length) {
-      toast({ title: 'Some files were too large', description: 'Max 25MB per file.', variant: 'destructive' });
+      toast({ title: t('complaintForm.errFileSize'), description: t('complaintForm.errFileSizeDesc'), variant: 'destructive' });
     }
     setFiles(prev => [...prev, ...valid].slice(0, 5));
     e.target.value = '';
@@ -100,19 +111,18 @@ export const Contact = () => {
   };
 
   const submitComplaint = async () => {
-    if (!selectedCaseTypeId) return toast({ title: 'Please select your case type', variant: 'destructive' });
-    if (isOthers && !othersText.trim()) return toast({ title: 'Please describe your case type', variant: 'destructive' });
-    if (!selectedDistrict) return toast({ title: 'Please select your district', variant: 'destructive' });
-    if (!selectedLawyerId) return toast({ title: 'Please select a lawyer', variant: 'destructive' });
-    if (!complaint.trim()) return toast({ title: 'Please describe your complaint', variant: 'destructive' });
-    if (!/^\+?[\d\s-]{7,15}$/.test(userPhone.trim())) return toast({ title: 'Valid phone number required', variant: 'destructive' });
-    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(userEmail.trim())) return toast({ title: 'Valid email required', variant: 'destructive' });
+    if (!selectedCaseTypeId) return toast({ title: t('complaintForm.errCaseType'), variant: 'destructive' });
+    if (isOthers && !othersText.trim()) return toast({ title: t('complaintForm.errOthers'), variant: 'destructive' });
+    if (!selectedDistrict) return toast({ title: t('complaintForm.errDistrict'), variant: 'destructive' });
+    if (!selectedLawyerId) return toast({ title: t('complaintForm.errLawyer'), variant: 'destructive' });
+    if (!complaint.trim()) return toast({ title: t('complaintForm.errComplaint'), variant: 'destructive' });
+    if (!/^\+?[\d\s-]{7,15}$/.test(userPhone.trim())) return toast({ title: t('complaintForm.errPhone'), variant: 'destructive' });
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(userEmail.trim())) return toast({ title: t('complaintForm.errEmail'), variant: 'destructive' });
 
     setIsSending(true);
     try {
       let caseTypeId = selectedCaseTypeId;
 
-      // For "Others", create a custom subtype on the fly
       if (isOthers) {
         const customName = `others_${othersText.toLowerCase().replace(/\s+/g, '_').slice(0, 40)}`;
         const { data: existing } = await supabase.from('case_types').select('id').eq('name', customName).maybeSingle();
@@ -143,7 +153,7 @@ export const Contact = () => {
 
       if (insErr) {
         if ((insErr as any).code === '23505') {
-          toast({ title: 'Duplicate complaint', description: 'You already filed this case type today.' });
+          toast({ title: t('complaintForm.duplicateTitle'), description: t('complaintForm.duplicateDesc') });
           setIsSending(false);
           return;
         }
@@ -153,11 +163,11 @@ export const Contact = () => {
       queryClient.invalidateQueries({ queryKey: ['case-analytics'] });
       queryClient.invalidateQueries({ queryKey: ['lawyer-cases'] });
 
-      toast({ title: 'Complaint Sent ✅', description: 'Delivered to the selected lawyer.' });
+      toast({ title: t('complaintForm.successTitle'), description: t('complaintForm.successDesc') });
       setComplaint(''); setFiles([]); setSelectedCaseTypeId(''); setOthersText(''); setSelectedLawyerId('');
     } catch (err: any) {
       console.error('Complaint submit error:', err);
-      toast({ title: 'Error', description: err.message || 'Failed to send complaint.', variant: 'destructive' });
+      toast({ title: t('complaintForm.errorTitle'), description: err.message || t('complaintForm.errorDesc'), variant: 'destructive' });
     } finally {
       setIsSending(false);
     }
@@ -167,37 +177,37 @@ export const Contact = () => {
     <section id="contact" className="py-6">
       <div className="text-center mb-8">
         <h2 className="text-2xl md:text-3xl font-heading font-bold mb-2">
-          <MapPin className="inline h-7 w-7 text-primary mr-2" /> File a Complaint
+          <MapPin className="inline h-7 w-7 text-primary mr-2" /> {t('complaintForm.heading')}
         </h2>
         <p className="text-muted-foreground">
-          Choose your case type, attach proof, and send it to a verified lawyer.
+          {t('complaintForm.headingSub')}
         </p>
       </div>
 
       <Card className="shadow-lg">
         <CardHeader className="bg-gradient-hero text-primary-foreground rounded-t-lg">
-          <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> Complaint Form</CardTitle>
+          <CardTitle className="flex items-center gap-2"><MapPin className="h-5 w-5" /> {t('complaintForm.cardTitle')}</CardTitle>
           <CardDescription className="text-primary-foreground/80">
-            Case type → Description → District → Lawyer → Contact → Proof → Send
+            {t('complaintForm.cardDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="p-6 space-y-6">
 
           {/* 1. Case Type */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Select Your Case Type</label>
+            <label className="text-sm font-medium mb-2 block">{t('complaintForm.caseTypeLabel')}</label>
             <Select value={selectedCaseTypeId} onValueChange={setSelectedCaseTypeId}>
-              <SelectTrigger><SelectValue placeholder="Choose a case category..." /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t('complaintForm.caseTypePlaceholder')} /></SelectTrigger>
               <SelectContent className="max-h-72">
                 {caseTypes.map(ct => (
-                  <SelectItem key={ct.id} value={ct.id}>{ct.display_name}</SelectItem>
+                  <SelectItem key={ct.id} value={ct.id}>{translateCaseType(ct, t)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
             {isOthers && (
               <Input
                 className="mt-3"
-                placeholder="Briefly specify your case type..."
+                placeholder={t('complaintForm.othersPlaceholder')}
                 value={othersText}
                 onChange={e => setOthersText(e.target.value)}
                 maxLength={80}
@@ -207,9 +217,9 @@ export const Contact = () => {
 
           {/* 2. Complaint */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Enter Your Complaint</label>
+            <label className="text-sm font-medium mb-2 block">{t('complaintForm.complaintLabel')}</label>
             <Textarea
-              placeholder="Describe what happened in detail..."
+              placeholder={t('complaintForm.complaintPlaceholder')}
               value={complaint}
               onChange={e => setComplaint(e.target.value)}
               className="min-h-[140px]"
@@ -220,9 +230,9 @@ export const Contact = () => {
 
           {/* 3. District */}
           <div>
-            <label className="text-sm font-medium mb-2 block">Select Your District</label>
+            <label className="text-sm font-medium mb-2 block">{t('complaintForm.districtLabel')}</label>
             <Select value={selectedDistrict} onValueChange={setSelectedDistrict}>
-              <SelectTrigger><SelectValue placeholder="Choose a Telangana district..." /></SelectTrigger>
+              <SelectTrigger><SelectValue placeholder={t('complaintForm.districtPlaceholder')} /></SelectTrigger>
               <SelectContent>
                 {DISTRICTS.map(d => <SelectItem key={d} value={d}>{d}</SelectItem>)}
               </SelectContent>
@@ -233,17 +243,17 @@ export const Contact = () => {
           {selectedDistrict && (
             <div>
               <label className="text-sm font-medium mb-2 block flex items-center gap-2">
-                <Users className="h-4 w-4" /> Select Lawyer for {selectedDistrict}
+                <Users className="h-4 w-4" /> {t('complaintForm.lawyerLabel', { district: selectedDistrict })}
               </label>
               {districtLawyers.length === 0 ? (
                 <div className="bg-muted/50 border border-dashed rounded-lg p-4 text-center">
                   <p className="text-sm text-muted-foreground">
-                    No approved lawyers in {selectedDistrict} yet. Try another district.
+                    {t('complaintForm.noLawyers', { district: selectedDistrict })}
                   </p>
                 </div>
               ) : (
                 <Select value={selectedLawyerId} onValueChange={setSelectedLawyerId}>
-                  <SelectTrigger><SelectValue placeholder="Choose a verified lawyer..." /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('complaintForm.lawyerPlaceholder')} /></SelectTrigger>
                   <SelectContent>
                     {districtLawyers.map(l => (
                       <SelectItem key={l.id} value={l.id}>
@@ -263,22 +273,22 @@ export const Contact = () => {
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label className="text-sm font-medium mb-1 flex items-center gap-1.5">
-                <Phone className="h-3.5 w-3.5" /> Phone Number
+                <Phone className="h-3.5 w-3.5" /> {t('complaintForm.phoneLabel')}
               </label>
-              <Input type="tel" placeholder="e.g. +91 98765 43210" value={userPhone} onChange={e => setUserPhone(e.target.value)} />
+              <Input type="tel" placeholder={t('complaintForm.phonePlaceholder')} value={userPhone} onChange={e => setUserPhone(e.target.value)} />
             </div>
             <div>
               <label className="text-sm font-medium mb-1 flex items-center gap-1.5">
-                <Mail className="h-3.5 w-3.5" /> Email
+                <Mail className="h-3.5 w-3.5" /> {t('complaintForm.emailLabel')}
               </label>
-              <Input type="email" placeholder="you@example.com" value={userEmail} onChange={e => setUserEmail(e.target.value)} />
+              <Input type="email" placeholder={t('complaintForm.emailPlaceholder')} value={userEmail} onChange={e => setUserEmail(e.target.value)} />
             </div>
           </div>
 
-          {/* 6. Proof Upload (optional) */}
+          {/* 6. Proof Upload */}
           <div>
             <label className="text-sm font-medium mb-2 block flex items-center gap-2">
-              <Upload className="h-4 w-4" /> Upload Proof (optional)
+              <Upload className="h-4 w-4" /> {t('complaintForm.uploadLabel')}
             </label>
             <div className="border-2 border-dashed border-input rounded-lg p-4 text-center">
               <input
@@ -291,7 +301,7 @@ export const Contact = () => {
               />
               <label htmlFor="proof-upload" className="cursor-pointer text-sm text-muted-foreground">
                 <Upload className="h-6 w-6 mx-auto mb-2 text-primary" />
-                Click to attach documents, images, or videos (max 5 files, 25MB each)
+                {t('complaintForm.uploadHint')}
               </label>
             </div>
             {files.length > 0 && (
@@ -318,7 +328,7 @@ export const Contact = () => {
             disabled={isSending}
           >
             {isSending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-            Send Complaint to Lawyer
+            {t('complaintForm.submit')}
           </Button>
         </CardContent>
       </Card>

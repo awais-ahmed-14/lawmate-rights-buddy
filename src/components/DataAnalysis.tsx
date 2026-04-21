@@ -41,8 +41,17 @@ export const DataAnalysis = () => {
     refetchInterval: 30000,
   });
 
+  const translateName = (name: string, display: string) => {
+    if (name?.startsWith('others_')) {
+      const prefix = t('caseTypes.others_prefix', 'Others');
+      const tail = display?.replace(/^Others:\s*/i, '') || '';
+      return `${prefix}: ${tail}`;
+    }
+    return t(`caseTypes.${name}`, display);
+  };
+
   const caseData = (analytics || []).map((item: any) => ({
-    type: item.display_name,
+    type: translateName(item.name, item.display_name),
     total: Number(item.total_cases),
     solved: Number(item.solved_cases),
     percentage: Number(item.success_rate),

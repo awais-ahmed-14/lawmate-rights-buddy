@@ -279,5 +279,22 @@
     "solvedLabel": "Solved",
     "rateLabel": "Success %",
     "noData": "No case data yet. Start using Lawmate AI to see real-time analytics here!"
+  },
+  "caseTypes": {
+    "theft_robbery": "Theft / Robbery",
+    "cybercrime": "Cybercrime (Fraud, Hacking, Identity Theft)",
+    "harassment": "Harassment (Online, Workplace, Sexual)",
+    "domestic_family": "Domestic / Family Disputes",
+    "financial": "Financial Disputes (Loans, Cheating, Insurance)",
+    "property_land": "Property / Land Disputes",
+    "employment": "Employment Issues",
+    "consumer": "Consumer Complaints",
+    "accident_injury": "Accident / Injury Claims",
+    "criminal_threats": "Criminal Threats (Blackmail, Extortion, Defamation)",
+    "police_legal": "Police / Legal Authority Issues",
+    "medical_negligence": "Medical Negligence",
+    "business": "Business Disputes",
+    "others": "Others",
+    "others_prefix": "Others"
   }
 }

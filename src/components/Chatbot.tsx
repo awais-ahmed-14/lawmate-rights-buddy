@@ -77,7 +77,8 @@ export const Chatbot = () => {
       hi: 'hi-IN',
       te: 'te-IN',
       ta: 'ta-IN',
-      bn: 'bn-IN'
+      bn: 'bn-IN',
+      ur: 'ur-PK'
     };
     utterance.lang = langMap[i18n.language] || 'en-IN';
     utterance.rate = 0.9;

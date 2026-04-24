@@ -32,7 +32,7 @@ export const AppSidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
           <Scale className="h-7 w-7 text-primary" />
           <div>
             <h1 className="text-lg font-heading font-bold text-primary">⚖️ LAWMATE</h1>
-            <p className="text-[11px] text-muted-foreground -mt-0.5">Know Your Rights</p>
+            <p className="text-[11px] text-muted-foreground -mt-0.5">{t('sidebar.knowYourRights')}</p>
           </div>
         </div>
       </div>

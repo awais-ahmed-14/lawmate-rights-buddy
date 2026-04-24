@@ -65,12 +65,12 @@ export const AppSidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
           <div className="px-2 py-2 rounded-md bg-muted/50">
             <p className="text-xs font-medium truncate">{profile?.full_name || user.email}</p>
             <p className="text-[10px] text-muted-foreground truncate flex items-center gap-1">
-              <Shield className="h-3 w-3" /> User
+              <Shield className="h-3 w-3" /> {t('sidebar.user')}
             </p>
           </div>
         )}
         <Button variant="ghost" size="sm" className="w-full justify-start text-destructive hover:text-destructive" onClick={handleLogout}>
-          <LogOut className="h-4 w-4 mr-2" /> Logout
+          <LogOut className="h-4 w-4 mr-2" /> {t('sidebar.logout')}
         </Button>
       </div>
     </aside>

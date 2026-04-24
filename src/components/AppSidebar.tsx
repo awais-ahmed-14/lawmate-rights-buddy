@@ -1,19 +1,21 @@
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { Bot, BarChart3, MessageSquareWarning, LogOut, Scale, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { to: '/assistant', label: 'AI Assistant', icon: Bot },
-  { to: '/complaint', label: 'Complaint', icon: MessageSquareWarning },
-  { to: '/analysis', label: 'Case Analysis', icon: BarChart3 },
-];
 
 export const AppSidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
   const { profile, user, signOut } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+
+  const navItems = [
+    { to: '/assistant', label: t('sidebar.aiAssistant'), icon: Bot },
+    { to: '/complaint', label: t('sidebar.complaint'), icon: MessageSquareWarning },
+    { to: '/analysis', label: t('sidebar.caseAnalysis'), icon: BarChart3 },
+  ];
 
   // highlight AI Assistant on root route too
   const isAssistantRoute = location.pathname === '/' || location.pathname === '/assistant';

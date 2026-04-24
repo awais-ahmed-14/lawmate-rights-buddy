@@ -38,7 +38,7 @@ export const AppSidebar = ({ onNavigate }: { onNavigate?: () => void }) => {
       </div>
 
       <nav className="flex-1 p-3 space-y-1">
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 mb-2 font-semibold">Main</p>
+        <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 mb-2 font-semibold">{t('sidebar.main')}</p>
         {navItems.map(({ to, label, icon: Icon }) => {
           const forcedActive = to === '/assistant' && isAssistantRoute;
           return (

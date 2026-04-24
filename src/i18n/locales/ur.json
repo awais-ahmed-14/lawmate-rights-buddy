@@ -282,5 +282,17 @@
     "business": "کاروباری تنازعات",
     "others": "دیگر",
     "others_prefix": "دیگر"
+  },
+  "sidebar": {
+    "aiAssistant": "اے آئی اسسٹنٹ",
+    "complaint": "شکایت",
+    "caseAnalysis": "کیس تجزیہ",
+    "main": "مرکزی",
+    "user": "صارف",
+    "logout": "لاگ آؤٹ",
+    "knowYourRights": "اپنے حقوق جانیں",
+    "pageAssistant": "اے آئی قانونی اسسٹنٹ",
+    "pageComplaint": "شکایت درج کریں",
+    "pageAnalysis": "کیس تجزیہ"
   }
 }

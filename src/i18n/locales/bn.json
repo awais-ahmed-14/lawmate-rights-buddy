@@ -287,5 +287,17 @@
     "business": "ব্যবসায়িক বিরোধ",
     "others": "অন্যান্য",
     "others_prefix": "অন্যান্য"
+  },
+  "sidebar": {
+    "aiAssistant": "এআই সহকারী",
+    "complaint": "অভিযোগ",
+    "caseAnalysis": "মামলা বিশ্লেষণ",
+    "main": "প্রধান",
+    "user": "ব্যবহারকারী",
+    "logout": "লগআউট",
+    "knowYourRights": "আপনার অধিকার জানুন",
+    "pageAssistant": "এআই আইনি সহকারী",
+    "pageComplaint": "অভিযোগ দাখিল করুন",
+    "pageAnalysis": "মামলা বিশ্লেষণ"
   }
 }

@@ -296,5 +296,17 @@
     "business": "Business Disputes",
     "others": "Others",
     "others_prefix": "Others"
+  },
+  "sidebar": {
+    "aiAssistant": "AI Assistant",
+    "complaint": "Complaint",
+    "caseAnalysis": "Case Analysis",
+    "main": "Main",
+    "user": "User",
+    "logout": "Logout",
+    "knowYourRights": "Know Your Rights",
+    "pageAssistant": "AI Legal Assistant",
+    "pageComplaint": "File a Complaint",
+    "pageAnalysis": "Case Analysis"
   }
 }

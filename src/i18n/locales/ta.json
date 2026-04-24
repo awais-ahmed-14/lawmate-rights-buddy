@@ -287,5 +287,17 @@
     "business": "வணிக தகராறுகள்",
     "others": "மற்றவை",
     "others_prefix": "மற்றவை"
+  },
+  "sidebar": {
+    "aiAssistant": "AI உதவியாளர்",
+    "complaint": "புகார்",
+    "caseAnalysis": "வழக்கு பகுப்பாய்வு",
+    "main": "முக்கிய",
+    "user": "பயனர்",
+    "logout": "வெளியேறு",
+    "knowYourRights": "உங்கள் உரிமைகளை அறிக",
+    "pageAssistant": "AI சட்ட உதவியாளர்",
+    "pageComplaint": "புகார் பதிவு செய்யவும்",
+    "pageAnalysis": "வழக்கு பகுப்பாய்வு"
   }
 }

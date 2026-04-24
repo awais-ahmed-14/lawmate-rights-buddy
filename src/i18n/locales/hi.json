@@ -287,5 +287,17 @@
     "business": "व्यावसायिक विवाद",
     "others": "अन्य",
     "others_prefix": "अन्य"
+  },
+  "sidebar": {
+    "aiAssistant": "एआई सहायक",
+    "complaint": "शिकायत",
+    "caseAnalysis": "मामला विश्लेषण",
+    "main": "मुख्य",
+    "user": "उपयोगकर्ता",
+    "logout": "लॉगआउट",
+    "knowYourRights": "अपने अधिकार जानें",
+    "pageAssistant": "एआई कानूनी सहायक",
+    "pageComplaint": "शिकायत दर्ज करें",
+    "pageAnalysis": "मामला विश्लेषण"
   }
 }

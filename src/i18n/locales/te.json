@@ -287,5 +287,17 @@
     "business": "వ్యాపార వివాదాలు",
     "others": "ఇతరులు",
     "others_prefix": "ఇతరులు"
+  },
+  "sidebar": {
+    "aiAssistant": "AI అసిస్టెంట్",
+    "complaint": "ఫిర్యాదు",
+    "caseAnalysis": "కేసు విశ్లేషణ",
+    "main": "ప్రధాన",
+    "user": "వినియోగదారు",
+    "logout": "లాగౌట్",
+    "knowYourRights": "మీ హక్కులను తెలుసుకోండి",
+    "pageAssistant": "AI న్యాయ సహాయకుడు",
+    "pageComplaint": "ఫిర్యాదు దాఖలు చేయండి",
+    "pageAnalysis": "కేసు విశ్లేషణ"
   }
 }
